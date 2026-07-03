@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.db.models import Max
+from django_ratelimit.decorators import ratelimit
 
 from datetime import timedelta
 from django.utils import timezone
@@ -54,6 +55,7 @@ def checkout(request):
 
 
 @login_required
+@ratelimit(key='user', rate='5/m', block=True)
 def checkout_confirm(request):
     cart = get_cart(request)
 

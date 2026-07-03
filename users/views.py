@@ -6,6 +6,7 @@ from orders.models import Order
 from .forms import RegisterForm
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
+from django_ratelimit.decorators import ratelimit
 
 from cart.cart import merge_carts
 
@@ -43,6 +44,7 @@ class CustomLoginView(LoginView):
         return super().form_invalid(form)
 
 
+@ratelimit(key='ip', rate='3/m', block=True)
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
