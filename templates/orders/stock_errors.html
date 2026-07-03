@@ -1,0 +1,63 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="form-container m-0" style="max-width: 100%;">
+                <div class="p-2">
+                    <div class="text-center mb-4">
+                        <h2 class="form-title mt-2">Stock Availability Issue</h2>
+                        <p class="text-muted">Some items in your cart became unavailable while you were shopping. Please resolve this to proceed to checkout.</p>
+                    </div>
+
+                    <hr style="border-color: rgba(255,255,255,0.15);">
+
+                    <div class="stock-errors-list my-4">
+                        {% for error in errors %}
+                            <div class="p-3 mb-3 rounded d-flex align-items-center justify-content-between border-start border-warning border-3" style="background: #24362c; border: 1px solid #476a50; border-left-width: 4px !important;">
+                                <div>
+                                    <h5 class="mb-1" style="font-weight: 600; color: white;">{{ error.product.name }}</h5>
+                                    <p class="mb-0 text-muted small">
+                                        {% if error.reason == 'out_of_stock' %}
+                                            <span class="text-danger fw-bold">Out of Stock.</span> Unfortunately, this book is completely sold out.
+                                        {% else %}
+                                            You requested <span class="fw-bold text-white">{{ error.requested }}</span> pcs, but only <span class="fw-bold" style="color: #78d35f;">{{ error.available }}</span> left in stock.
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    {% if error.available > 0 %}
+                                        <form action="{% url 'cart:cart_update' error.product.id %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="{{ error.available }}">
+                                            <input type="hidden" name="next" value="{% url 'orders:checkout' %}">
+                                            <button type="submit" class="btn btn-outline-custom btn-sm py-1 px-3">
+                                                Accept {{ error.available }} pcs
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    <form action="{% url 'cart:cart_remove' error.product.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value="{% url 'orders:checkout' %}">
+                                        <button type="submit" class="btn btn-custom-danger btn-sm py-1 px-3">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'cart:cart_detail' %}" class="btn btn-link" style="color: #7fc985;">Return to Cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -27,6 +27,46 @@ def checkout(request):
         messages.warning(request, 'Your cart is empty.')
         return redirect('shop:catalog')
 
+    stock_errors = []
+
+    print("\n--- START STOCK CHECK DEBUG ---")
+    for item in cart:
+        prod_obj = item.get('product')
+
+        quantity_requested = int(item.get('quantity', 0))
+
+        # Берем свежайший продукт из базы
+        product = Product.objects.get(id=prod_obj.id)
+
+        print(f"Book: {product.name}")
+        print(f"Requested (в корзине): {quantity_requested}")
+        print(f"Stock (в базе): {product.stock}")
+        print(f"Is available field: {product.is_available}")
+
+        if product.stock == 0:
+            print("-> TRIGGER: OUT OF STOCK")
+            stock_errors.append({
+                'product': product,
+                'requested': quantity_requested,
+                'available': 0,
+                'reason': 'out_of_stock'
+            })
+        elif quantity_requested > product.stock:
+            print("-> TRIGGER: NOT ENOUGH STOCK")
+            stock_errors.append({
+                'product': product,
+                'requested': quantity_requested,
+                'available': product.stock,
+                'reason': 'not_enough'
+            })
+    print("--- END STOCK CHECK DEBUG ---\n")
+
+    if stock_errors:
+        return render(request, 'orders/stock_errors.html', {
+            'errors': stock_errors,
+            'cart': cart
+        })
+
     addresses = ShippingAddress.objects.filter(user=request.user)
 
     if request.method == 'POST':

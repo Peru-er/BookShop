@@ -21,10 +21,8 @@ def cart_clear(request):
 
 def get_cart_data(cart):
     items = []
-
     for item in cart:
         product = item['product']
-
         image_url = ""
         try:
             if product.images.exists() and product.images.first().image:
@@ -87,12 +85,25 @@ def cart_add(request, product_id):
 def cart_remove(request, product_id):
     cart = get_cart(request)
     product = get_object_or_404(Product, id=product_id)
+
+    total_items_before = len(cart)
+
     cart.remove(product)
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse(get_cart_data(cart))
 
     messages.success(request, f'Item "{product.name}" removed from cart')
+
+    next_url = request.POST.get('next')
+    if next_url:
+
+        if total_items_before > 1:
+            return redirect(next_url)
+        else:
+            messages.warning(request, 'Your cart is now empty.')
+            return redirect('cart:cart_detail')
+
     return redirect('cart:cart_detail')
 
 
@@ -109,7 +120,12 @@ def cart_update(request, product_id):
         cart.remove(product)
         messages.success(request, 'Item removed from cart')
 
+    next_url = request.POST.get('next')
+    if next_url and len(cart) > 0:
+        return redirect(next_url)
+
     return redirect('cart:cart_detail')
+
 
 def cart_data_api(request):
     cart = get_cart(request)

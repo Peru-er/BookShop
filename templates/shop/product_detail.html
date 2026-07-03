@@ -67,7 +67,7 @@
                         £{{ product.price }}
                     </span>
 
-                    {% if product.is_available %}
+                    {% if product.stock > 0 %}
 
                         <span class="status-badge in-stock">
                             In stock
@@ -83,7 +83,7 @@
 
                 </div>
 
-                {% if product.is_available %}
+                {% if product.stock > 0 %}
 
                     <form
                         method="post"
@@ -107,6 +107,17 @@
                         </button>
 
                     </form>
+
+                {% else %}
+
+                    <div class="mt-4">
+                        <button
+                            class="btn btn-disabled-stock w-100"
+                            disabled
+                        >
+                            Out of stock
+                        </button>
+                    </div>
 
                 {% endif %}
 

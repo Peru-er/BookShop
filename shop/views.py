@@ -1,5 +1,5 @@
 
-from django.db.models import Q
+from django.db.models import Q, Case, Value, When, IntegerField
 from django.core.cache import cache
 from django.shortcuts import render, get_object_or_404
 from .models import (
@@ -10,22 +10,21 @@ from .models import (
 
 
 def home(request):
-
     products = Product.objects.select_related('author').prefetch_related('images').all()[:8]
-
-    return render(
-        request,
-        'shop/home.html',
-        {
-            'products': products,
-        }
-    )
+    return render(request, 'shop/home.html', {'products': products})
 
 
 def catalog(request):
+    # МЫ ИЗМЕНИЛИ ТОЛЬКО ЭТУ СТРОЧКУ НАЧАЛЬНОЙ ВЫБОРКИ:
+    products = Product.objects.select_related('author').prefetch_related('images').annotate(
+        out_of_stock=Case(
+            When(stock=0, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    ).order_by('out_of_stock', 'name')
 
-    products = Product.objects.select_related('author').prefetch_related('images').all()
-
+    # --- ДАЛЬШЕ ТВОЙ КОД ИДЕТ БЕЗ ИЗМЕНЕНИЙ ---
     categories = cache.get('shop_categories')
     if not categories:
         categories = Category.objects.all()
@@ -109,15 +108,5 @@ def catalog(request):
     })
 
 def product_detail(request, pk):
-    product = get_object_or_404(
-        Product,
-        pk=pk
-    )
-
-    return render(
-        request,
-        'shop/product_detail.html',
-        {
-            'product': product,
-        }
-    )
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'shop/product_detail.html', {'product': product})

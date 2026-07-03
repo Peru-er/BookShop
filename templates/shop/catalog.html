@@ -238,7 +238,7 @@
 
             <div class="col-sm-6 col-lg-6 col-xl-3">
 
-                <div class="book-card">
+                <div class="book-card {% if product.stock == 0 %}book-out-of-stock{% endif %}">
 
                     <a
                         href="{% url 'shop:product_detail' product.id %}"
@@ -279,7 +279,7 @@
 
                     <div class="book-footer">
 
-                        {% if product.is_available %}
+                        {% if product.stock > 0 %}
 
                         <form method="post" action="{% url 'cart:cart_add' product.id %}" class="ajax-add-to-cart-form" data-product-id="{{ product.id }}">
                             {% csrf_token %}
@@ -292,7 +292,7 @@
                         {% else %}
 
                         <button
-                            class="btn btn-secondary w-100"
+                            class="btn btn-disabled-stock w-100"
                             disabled
                         >
                             Out of stock
