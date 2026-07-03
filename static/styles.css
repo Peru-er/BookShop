@@ -1646,3 +1646,86 @@ textarea.form-control{
 .breadcrumb-item.active {
     color: #b4b4b4;
 }
+
+
+/* =========================================================
+   SIDE CART (DARK MODE INTEGRATION)
+========================================================= */
+
+.side-cart {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100%;
+    background-color: #222822;
+    border-left: 1px solid #355d3a;
+    z-index: 1050;
+    transition: right 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    color: #f3f2ef;
+}
+
+.side-cart.open {
+    right: 0;
+}
+
+.side-cart .border-bottom {
+    border-bottom: 1px solid #355d3a !important;
+}
+
+.side-cart .border-top {
+    border-top: 1px solid #355d3a !important;
+}
+
+.side-cart .bg-light {
+    background-color: #1c221c !important;
+}
+
+.side-cart .btn-close {
+    filter: invert(1) grayscale(1) brightness(2);
+}
+
+.side-cart-items {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.side-cart-item {
+    display: flex;
+    gap: 15px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
+
+.side-cart-img {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #476a50;
+}
+
+.side-cart-item h6 {
+    color: white;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}

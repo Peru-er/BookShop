@@ -4,8 +4,8 @@ from shop.models import Product
 from .models import Cart, CartItem
 import uuid
 
+
 class SessionCart:
-    """Session-based кошик для анонімних користувачів"""
 
     def __init__(self, request):
         self.session = request.session
@@ -44,13 +44,20 @@ class SessionCart:
     def __iter__(self):
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
-        cart = self.cart.copy()
+
+        custom_cart = {}
+        for p_id, item in self.cart.items():
+            custom_cart[p_id] = {
+                'quantity': item['quantity'],
+                'price': Decimal(item['price']),
+            }
 
         for product in products:
-            cart[str(product.id)]['product'] = product
+            product_id = str(product.id)
+            if product_id in custom_cart:
+                custom_cart[product_id]['product'] = product
 
-        for item in cart.values():
-            item['price'] = Decimal(item['price'])
+        for item in custom_cart.values():
             item['total_price'] = item['price'] * item['quantity']
             yield item
 
@@ -66,7 +73,6 @@ class SessionCart:
 
 
 class DatabaseCart:
-    """Database-based кошик для зареєстрованих користувачів"""
 
     def __init__(self, request):
         self.request = request
@@ -102,7 +108,7 @@ class DatabaseCart:
                 'product': item.product,
                 'quantity': item.quantity,
                 'price': item.product.price,
-                'total_price': item.product.price * item.quantity  # Спрощений підрахунок
+                'total_price': item.product.price * item.quantity
             }
 
     def __len__(self):
@@ -140,3 +146,9 @@ def merge_carts(request):
         )
 
     session_cart.clear()
+
+    if hasattr(db_cart.cart, '_prefetched_objects_cache'):
+        db_cart.cart._prefetched_objects_cache.pop('items', None)
+
+    if hasattr(db_cart.cart, 'items'):
+        db_cart.cart.items.all()._result_cache = None
