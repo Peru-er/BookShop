@@ -26,6 +26,25 @@ document.addEventListener('DOMContentLoaded', function () {
     if (closeCartBtn) closeCartBtn.addEventListener('click', closeCart);
     if (overlay) overlay.addEventListener('click', closeCart);
 
+    function loadInitialCartData() {
+        fetch('/cart/api/data/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            updateCartUI(data);
+        })
+        .catch(error => console.error('Error loading initial cart data:', error));
+    }
+
+    loadInitialCartData();
+
     document.querySelectorAll('.ajax-add-to-cart-form').forEach(form => {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -41,9 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Server error');
-                }
+                if (!response.ok) throw new Error('Server error');
                 return response.json();
             })
             .then(data => {

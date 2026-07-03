@@ -110,3 +110,7 @@ def cart_update(request, product_id):
         messages.success(request, 'Item removed from cart')
 
     return redirect('cart:cart_detail')
+
+def cart_data_api(request):
+    cart = get_cart(request)
+    return JsonResponse(get_cart_data(cart))
