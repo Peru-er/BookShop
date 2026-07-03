@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Cart</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+
+<div class="cart-container">
+
+    <h1 class="section-title mb-4">
+        Your Cart
+    </h1>
+
+    {% if cart %}
+
+        {% for item in cart %}
+
+        <div class="cart-item">
+
+            <div class="cart-info">
+
+                {% if item.product.images.first %}
+                    <img
+                        src="{{ item.product.images.first.image.url }}"
+                        class="cart-image"
+                        alt="{{ item.product.name }}"
+                    >
+                {% else %}
+                    <div class="cart-image-placeholder">
+                        No image
+                    </div>
+                {% endif %}
+
+                <div>
+
+                    <h4 class="cart-title">
+                        {{ item.product.name }}
+                    </h4>
+
+                    <p class="cart-author">
+                        {{ item.product.author }}
+                    </p>
+
+                    <p class="cart-price">
+                        £{{ item.price }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="cart-actions">
+
+                <form
+                    method="post"
+                    action="{% url 'cart:cart_update' item.product.id %}"
+                    class="quantity-form"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="button"
+                        class="quantity-btn"
+                        onclick="decreaseQuantity(this)"
+                    >
+                        −
+                    </button>
+
+                    <input
+                        type="number"
+                        name="quantity"
+                        value="{{ item.quantity }}"
+                        min="1"
+                        class="quantity-input"
+                        onchange="this.form.submit()"
+                    >
+
+                    <button
+                        type="button"
+                        class="quantity-btn"
+                        onclick="increaseQuantity(this)"
+                    >
+                        +
+                    </button>
+
+                </form>
+
+                <div class="cart-total">
+                    £{{ item.total_price }}
+                </div>
+
+                <form
+                    method="post"
+                    action="{% url 'cart:cart_remove' item.product.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        class="btn btn-custom-danger"
+                        type="submit"
+                    >
+                        Remove
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+        <div class="cart-summary">
+
+            <div>
+
+                <h3>
+                    Total
+                </h3>
+
+                <h2 class="book-price">
+                    £{{ cart.get_total_price }}
+                </h2>
+
+            </div>
+
+            <div class="cart-buttons">
+
+                <a
+                    href="{% url 'shop:catalog' %}"
+                    class="btn btn-outline-custom"
+                >
+                    Continue Shopping
+                </a>
+
+                <form
+                    method="post"
+                    action="{% url 'cart:cart_clear' %}"
+                    class="d-inline"
+                    onsubmit="return confirm('Clear your cart?');"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        class="btn btn-custom-danger"
+                        type="submit"
+                    >
+                        Clear Cart
+                    </button>
+
+                </form>
+
+                <a
+                    href="{% url 'orders:checkout' %}"
+                    class="btn btn-custom"
+                >
+                    Checkout
+                </a>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-orders">
+
+            <h3>
+                Your cart is empty
+            </h3>
+
+            <p>
+                Looks like you haven't added anything yet.
+            </p>
+
+            <a
+                href="{% url 'shop:catalog' %}"
+                class="btn btn-custom"
+            >
+                Go to shopping
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+
+function decreaseQuantity(button){
+
+    const input = button.nextElementSibling;
+
+    if(input.value > 1){
+
+        input.value = parseInt(input.value) - 1;
+
+        input.form.submit();
+
+    }
+
+}
+
+function increaseQuantity(button){
+
+    const input = button.previousElementSibling;
+
+    input.value = parseInt(input.value) + 1;
+
+    input.form.submit();
+
+}
+
+</script>
+
+{% endblock %}

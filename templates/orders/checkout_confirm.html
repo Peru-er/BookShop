@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'cart:cart_detail' %}">Cart</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'orders:checkout' %}">Checkout</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Confirmation</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block title %}Order confirmation{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">Confirmation and payment</h2>
+
+        <div class="product-card mb-4">
+
+            <h4 class="section-title mb-3">
+                Shipping Address
+            </h4>
+
+            <p class="mb-2">
+                <strong>{{ address.full_name }}</strong>
+            </p>
+
+            <p class="mb-2">
+                {{ address.address_line1 }}
+                {% if address.address_line2 %}
+                    <br>{{ address.address_line2 }}
+                {% endif %}
+            </p>
+
+            <p class="mb-2">
+                {{ address.city }}, {{ address.postal_code }}
+            </p>
+
+            <p class="mb-2">
+                {{ address.country }}
+            </p>
+
+            <p class="mb-0">
+                {{ address.phone }}
+            </p>
+
+        </div>
+
+        <form method="post" action="{% url 'orders:checkout_confirm' %}">
+            {% csrf_token %}
+            <h4 class="mb-4">Payment method and comments</h4>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">{{ form.payment_method.label }}</label>
+                <div class="payment-options">
+
+                    {% for radio in form.payment_method %}
+
+                        <label class="payment-option">
+
+                            {{ radio.tag }}
+
+                            <span>
+                                {{ radio.choice_label }}
+                            </span>
+
+                        </label>
+
+                    {% endfor %}
+
+                </div>
+                {% if form.payment_method.errors %}
+                    <div class="text-danger mt-1 small">{{ form.payment_method.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                    <div class="text-danger mt-1 small">{{ form.notes.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="agreement-box">
+
+                {{ form.agree_terms }}
+
+                <label for="{{ form.agree_terms.id_for_label }}">
+
+                    {{ form.agree_terms.label }}
+
+                </label>
+
+            </div>
+            <div class="d-flex justify-content-between mt-5">
+                <a href="{% url 'orders:checkout' %}" class="btn btn-outline-custom btn-lg">Back to address</a>
+                <button type="submit" class="btn btn-custom btn-lg">Confirm the order</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-lg-4">
+
+        <div class="product-card sticky-top checkout-summary">
+
+            <h3 class="section-title mb-4">
+
+                To be paid
+
+            </h3>
+
+            {% for item in cart %}
+
+            <div class="summary-item">
+
+                <div>
+
+                    <strong>
+
+                        {{ item.product.name }}
+
+                    </strong>
+
+                    <br>
+
+                    <small>
+
+                        ×{{ item.quantity }}
+
+                    </small>
+
+                </div>
+
+                <div>
+
+                    £{{ item.total_price }}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+            <hr>
+
+            <div class="summary-total">
+
+                <span>
+
+                    Total
+
+                </span>
+
+                <span>
+
+                    £{{ cart.get_total_price }}
+
+                </span>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,353 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Catalogue{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+
+    <!-- FILTERS -->
+    <div class="col-lg-3">
+
+        <div class="filter-card">
+
+            <h3 class="section-title mb-4">
+                Filters
+            </h3>
+
+            <form method="get">
+
+                <!-- SEARCH -->
+
+                <label class="form-label">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ query }}"
+                    class="form-control search-input mb-4"
+                    placeholder="Search books..."
+                >
+
+                <!-- CATEGORY -->
+
+                <label class="form-label">
+                    Category
+                </label>
+
+                <select
+                    name="category"
+                    class="form-select mb-4"
+                >
+
+                    <option value="">
+                        All categories
+                    </option>
+
+                    {% for category in categories %}
+
+                    <option
+                        value="{{ category.id }}"
+                        {% if selected_category == category.id|stringformat:'s' %}selected{% endif %}
+                    >
+                        {{ category.name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <!-- GENRES -->
+
+                <label class="form-label">
+                    Genres
+                </label>
+
+                <div class="mb-4">
+
+                    {% for genre in genres %}
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="genre"
+                            value="{{ genre.id }}"
+                            {% if genre.id|stringformat:'s' in selected_genres %}checked{% endif %}
+                        >
+
+                        <label class="form-check-label">
+                            {{ genre.name }}
+                        </label>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <!-- LANGUAGE -->
+
+                <label class="form-label">
+                    Language
+                </label>
+
+                <select
+                    class="form-select mb-4"
+                    name="language"
+                >
+
+                    <option value="">
+                        All languages
+                    </option>
+
+                    {% for language in languages %}
+
+                    <option
+                        value="{{ language }}"
+                        {% if selected_language == language %}selected{% endif %}
+                    >
+                        {{ language }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <!-- FORMAT -->
+
+                <label class="form-label">
+                    Format
+                </label>
+
+                <select
+                    class="form-select mb-4"
+                    name="format"
+                >
+
+                    <option value="">
+                        All formats
+                    </option>
+
+                    {% for format in formats %}
+
+                    <option
+                        value="{{ format }}"
+                        {% if selected_format == format %}selected{% endif %}
+                    >
+                        {{ format }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <!-- AGE -->
+
+                <label class="form-label">
+                    Age Rating
+                </label>
+
+                <select
+                    class="form-select mb-4"
+                    name="age_rating"
+                >
+
+                    <option value="">
+                        All
+                    </option>
+
+                    {% for rating in age_ratings %}
+
+                    <option
+                        value="{{ rating }}"
+                        {% if selected_age_rating == rating %}selected{% endif %}
+                    >
+                        {{ rating }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <!-- PRICE -->
+
+                <label class="form-label">
+                    Price
+                </label>
+
+                <div class="row g-2 mb-4">
+
+                    <div class="col">
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="min_price"
+                            value="{{ min_price }}"
+                            placeholder="Min"
+                        >
+
+                    </div>
+
+                    <div class="col">
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="max_price"
+                            value="{{ max_price }}"
+                            placeholder="Max"
+                        >
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="btn btn-custom w-100"
+                    type="submit"
+                >
+                    Apply Filters
+                </button>
+
+                <a
+                    href="{% url 'shop:catalog' %}"
+                    class="btn btn-outline-custom w-100 mt-2"
+                >
+                    Reset
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- PRODUCTS -->
+
+    <div class="col-lg-9">
+
+        <div class="row g-4">
+
+            {% for product in products %}
+
+            <div class="col-sm-6 col-lg-6 col-xl-3">
+
+                <div class="book-card">
+
+                    <a
+                        href="{% url 'shop:product_detail' product.id %}"
+                        class="book-link"
+                    >
+
+                        {% if product.images.first %}
+
+                            <img
+                                src="{{ product.images.first.image.url }}"
+                                class="book-cover"
+                            >
+
+                        {% endif %}
+
+                        <div class="card-body">
+
+                            <h5 class="book-title">
+                                {{ product.name }}
+                            </h5>
+
+                            <p class="book-author">
+                                {{ product.author }}
+                            </p>
+
+                            <p class="book-description">
+                                {{ product.description|truncatewords:14 }}
+                            </p>
+
+                            <h5 class="book-price">
+                                £{{ product.price }}
+                            </h5>
+
+                        </div>
+
+                    </a>
+
+
+                    <div class="book-footer">
+
+                        {% if product.is_available %}
+
+                        <form
+                            method="post"
+                            action="{% url 'cart:cart_add' product.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="quantity"
+                                value="1"
+                            >
+
+                            <button
+                                class="btn btn-custom w-100"
+                                type="submit"
+                            >
+                                Add to cart
+                            </button>
+
+                        </form>
+
+                        {% else %}
+
+                        <button
+                            class="btn btn-secondary w-100"
+                            disabled
+                        >
+                            Out of stock
+                        </button>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="col-12">
+
+                <div class="empty-orders">
+
+                    <h4>
+
+                        No books found
+
+                    </h4>
+
+                    <p>
+
+                        Try changing the filters or search query.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

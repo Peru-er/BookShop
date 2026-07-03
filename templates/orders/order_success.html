@@ -1,0 +1,68 @@
+
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'cart:cart_detail' %}">Cart</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'orders:checkout' %}">Checkout</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'orders:checkout_confirm' %}">Confirmation</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Success</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block title %}Order Complete{% endblock %}
+
+{% block content %}
+
+<div class="container text-center my-5">
+
+    <h1 class="section-title mb-4">
+
+        Order Successfully Placed
+
+    </h1>
+
+    <div class="product-card mx-auto order-success-card">
+
+        <p class="mb-3 text-light">
+
+            Your order number
+
+        </p>
+
+        <h2 class="order-success-number">
+
+            #{{ order.order_number }}
+
+        </h2>
+
+        <hr>
+
+        <p class="order-success-text">
+
+            Thank you for your purchase. We have already started processing your order.
+            A confirmation email has been sent to your email address.
+
+        </p>
+
+    </div>
+
+    <div class="mt-5">
+
+        <a
+            href="{% url 'shop:catalog' %}"
+            class="btn btn-custom px-5"
+        >
+
+            Continue Shopping
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

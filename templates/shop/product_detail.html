@@ -1,0 +1,191 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+
+<div class="product-page">
+
+    <div class="row g-5">
+
+        <!-- IMAGE -->
+
+        <div class="col-lg-4">
+
+            <div class="product-image-card">
+
+                {% if product.images.first %}
+
+                    <img
+                        src="{{ product.images.first.image.url }}"
+                        class="product-image"
+                        alt="{{ product.name }}"
+                    >
+
+                {% else %}
+
+                    <div class="no-image">
+                        No image available
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- INFO -->
+
+        <div class="col-lg-8">
+
+            <div class="product-card">
+
+                <h1 class="product-title">
+                    {{ product.name }}
+                </h1>
+
+                <p class="product-author">
+                    {{ product.author }}
+                </p>
+
+                {% if product.publisher %}
+                    <p class="product-publisher">
+                        {{ product.publisher }}
+                    </p>
+                {% endif %}
+
+                <hr>
+
+                <p class="product-description">
+                    {{ product.description }}
+                </p>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+
+                    <span class="product-price">
+                        £{{ product.price }}
+                    </span>
+
+                    {% if product.is_available %}
+
+                        <span class="status-badge in-stock">
+                            In stock
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-badge out-stock">
+                            Out of stock
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+                {% if product.is_available %}
+
+                    <form
+                        method="post"
+                        action="{% url 'cart:cart_add' product.id %}"
+                        class="mt-4"
+                    >
+
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            name="quantity"
+                            value="1"
+                        >
+
+                        <button
+                            class="btn btn-custom w-100"
+                            type="submit"
+                        >
+                            Add to cart
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+            <!-- DETAILS -->
+
+            <div class="product-card mt-4">
+
+                <h3 class="section-title">
+                    Details
+                </h3>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <p><strong>Category</strong><br>{{ product.category }}</p>
+
+                        {% if product.series %}
+                            <p><strong>Series</strong><br>{{ product.series }}</p>
+                        {% endif %}
+
+                        <p><strong>Language</strong><br>{{ product.language }}</p>
+
+                        <p><strong>Format</strong><br>{{ product.format }}</p>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        {% if product.pages %}
+                            <p><strong>Pages</strong><br>{{ product.pages }}</p>
+                        {% endif %}
+
+                        {% if product.publication_year %}
+                            <p><strong>Year</strong><br>{{ product.publication_year }}</p>
+                        {% endif %}
+
+                        {% if product.isbn %}
+                            <p><strong>ISBN</strong><br>{{ product.isbn }}</p>
+                        {% endif %}
+
+                        {% if product.age_rating %}
+                            <p><strong>Age</strong><br>{{ product.age_rating }}</p>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- GENRES -->
+
+            {% if product.genres.all %}
+
+            <div class="product-card mt-4">
+
+                <h3 class="section-title">
+                    Genres
+                </h3>
+
+                {% for genre in product.genres.all %}
+
+                    <span class="genre-pill">
+                        {{ genre.name }}
+                    </span>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
