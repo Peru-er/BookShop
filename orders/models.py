@@ -1,3 +1,4 @@
+
 import uuid
 
 from django.db import models
@@ -7,6 +8,8 @@ from shop.models import Product
 from django.conf import settings
 from datetime import timedelta
 from django.utils import timezone
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 
 class ShippingAddress(models.Model):
@@ -107,3 +110,28 @@ class OrderStatusHistory(models.Model):
     note = models.TextField()
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+@receiver(pre_save, sender=Order)
+def restore_stock_on_cancelled(sender, instance, **kwargs):
+    # Если заказ уже существует в базе
+    if instance.pk:
+        try:
+            # Берем то, что сейчас лежит в базе данных (до сохранения)
+            old_order = Order.objects.get(pk=instance.pk)
+
+            # Если старый статус НЕ был отменен, а новый стал 'cancelled'
+            if old_order.status != 'cancelled' and instance.status == 'cancelled':
+                # Загружаем позиции заказа напрямую через модель OrderItem
+                items = OrderItem.objects.filter(order=instance)
+
+                for item in items:
+                    if item.product:
+                        product = item.product
+                        product.stock += item.quantity
+                        if product.stock > 0:
+                            product.is_available = True
+                        product.save()
+
+        except Order.DoesNotExist:
+            pass

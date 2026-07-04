@@ -17,10 +17,14 @@ from shop.models import Product
 from .models import Order, OrderItem, ShippingAddress, OrderStatusHistory
 from .forms import ShippingAddressForm, OrderCheckoutForm
 from .utils import send_order_status_email, send_order_confirmation_email
+from django.contrib.auth.views import redirect_to_login
 
 
-@login_required
 def checkout(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, "Please log in or register to proceed.")
+        return redirect_to_login(request.get_full_path(), login_url='users:login')
+
     cart = get_cart(request)
 
     if len(cart) == 0:
@@ -29,13 +33,10 @@ def checkout(request):
 
     stock_errors = []
 
-    print("\n--- START STOCK CHECK DEBUG ---")
     for item in cart:
         prod_obj = item.get('product')
-
         quantity_requested = int(item.get('quantity', 0))
 
-        # Берем свежайший продукт из базы
         product = Product.objects.get(id=prod_obj.id)
 
         print(f"Book: {product.name}")
@@ -59,7 +60,6 @@ def checkout(request):
                 'available': product.stock,
                 'reason': 'not_enough'
             })
-    print("--- END STOCK CHECK DEBUG ---\n")
 
     if stock_errors:
         return render(request, 'orders/stock_errors.html', {
@@ -290,7 +290,7 @@ def cancel_order(request, order_id):
 
     messages.success(
         request,
-        'Your order has been cancelled. Books returned to stock.'
+        'Your order has been cancelled.'
     )
 
     return redirect('users:profile')
