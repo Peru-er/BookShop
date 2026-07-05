@@ -1,4 +1,3 @@
-
 from django.db.models import Q, Case, Value, When, IntegerField
 from django.core.cache import cache
 from django.shortcuts import render, get_object_or_404
@@ -6,6 +5,8 @@ from .models import (
     Product,
     Category,
     Genre,
+    Author,
+    Series,
 )
 
 
@@ -13,10 +14,9 @@ def home(request):
     products = Product.objects.select_related('author').prefetch_related('images').all()[:8]
     return render(request, 'shop/home.html', {'products': products})
 
-
 def catalog(request):
-    # МЫ ИЗМЕНИЛИ ТОЛЬКО ЭТУ СТРОЧКУ НАЧАЛЬНОЙ ВЫБОРКИ:
-    products = Product.objects.select_related('author').prefetch_related('images').annotate(
+
+    products = Product.objects.select_related('author', 'series').prefetch_related('images').annotate(
         out_of_stock=Case(
             When(stock=0, then=Value(1)),
             default=Value(0),
@@ -24,7 +24,6 @@ def catalog(request):
         )
     ).order_by('out_of_stock', 'name')
 
-    # --- ДАЛЬШЕ ТВОЙ КОД ИДЕТ БЕЗ ИЗМЕНЕНИЙ ---
     categories = cache.get('shop_categories')
     if not categories:
         categories = Category.objects.all()
@@ -35,18 +34,35 @@ def catalog(request):
         genres = Genre.objects.all()
         cache.set('shop_genres', genres, 86400)
 
-    query = request.GET.get('q', '')
+    authors = cache.get('shop_authors')
+    if not authors:
+        authors = Author.objects.all().order_by('name')
+        cache.set('shop_authors', authors, 86400)
+
+    series_list = cache.get('shop_series')
+    if not series_list:
+        series_list = Series.objects.all().order_by('name')
+        cache.set('shop_series', series_list, 86400)
+
+    author = request.GET.get('author')
+    series = request.GET.get('series')
+    publisher = request.GET.get('publisher')
     category = request.GET.get('category')
     selected_genres = request.GET.getlist('genre')
     language = request.GET.get('language')
     book_format = request.GET.get('format')
     age_rating = request.GET.get('age_rating')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
 
-    if query:
-        products = products.filter(
-            Q(name__icontains=query) |
-            Q(author__name__icontains=query)
-        )
+    if author:
+        products = products.filter(author_id=author)
+
+    if series:
+        products = products.filter(series_id=series)
+
+    if publisher:
+        products = products.filter(publisher=publisher)
 
     if category:
         products = products.filter(category_id=category)
@@ -62,6 +78,12 @@ def catalog(request):
 
     if age_rating:
         products = products.filter(age_rating=age_rating)
+
+    if min_price:
+        products = products.filter(price__gte=max(0, float(min_price)))
+
+    if max_price:
+        products = products.filter(price__lte=max(0, float(max_price)))
 
     languages = (
         Product.objects
@@ -90,23 +112,50 @@ def catalog(request):
         .order_by('age_rating')
     )
 
+    publishers = (
+        Product.objects
+        .exclude(publisher__isnull=True)
+        .exclude(publisher__exact='')
+        .values_list('publisher', flat=True)
+        .distinct()
+        .order_by('publisher')
+    )
+
     return render(request, 'shop/catalog.html', {
         'products': products,
         'categories': categories,
         'genres': genres,
+        'authors': authors,
+        'series_list': series_list,
+        'publishers': publishers,
 
         'languages': languages,
         'formats': formats,
         'age_ratings': age_ratings,
 
-        'query': query,
+        'selected_author': author,
+        'selected_series': series,
+        'selected_publisher': publisher,
         'selected_category': category,
         'selected_genres': selected_genres,
         'selected_language': language,
         'selected_format': book_format,
         'selected_age_rating': age_rating,
+        'min_price': min_price,
+        'max_price': max_price,
     })
 
 def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+    product = get_object_or_404(Product.objects.select_related('author', 'series').prefetch_related('genres'), pk=pk)
     return render(request, 'shop/product_detail.html', {'product': product})
+
+
+def author_detail(request, pk):
+    author = get_object_or_404(Author, pk=pk)
+
+    products = Product.objects.filter(author=author).prefetch_related('images').order_by('name')
+
+    return render(request, 'shop/author_detail.html', {
+        'author': author,
+        'products': products
+    })

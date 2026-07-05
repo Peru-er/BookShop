@@ -1811,3 +1811,71 @@ textarea.form-control{
 .product-card form .col-md-6:has(input[type="checkbox"]) {
     display: none !important;
 }
+
+.text-custom-link {
+    color: #78d35f;
+    transition: color 0.2s ease;
+}
+
+.text-custom-link:hover {
+    color: #a3f08e;
+    text-decoration: underline !important;
+}
+
+.genre-pill {
+    transition: all 0.2s ease;
+}
+
+.genre-pill:hover {
+    background-color: #4d7358;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.product-card .product-author a {
+    color: #78d35f;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.product-card .product-author a:hover {
+    color: #3b5c43;
+    text-decoration: none;
+}
+
+.product-card .col-md-6 a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.product-card .col-md-6 a:hover {
+    color: #78d35f;
+    text-decoration: underline;
+}
+
+.product-genres-list {
+    color: #ffffff;
+}
+
+.genre-link {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.genre-link:hover {
+    color: #78d35f;
+    text-decoration: underline;
+}
+
+.product-card .product-publisher a {
+    color: #a3a3a3;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.product-card .product-publisher a:hover {
+    color: #78d35f;
+    text-decoration: underline;
+}

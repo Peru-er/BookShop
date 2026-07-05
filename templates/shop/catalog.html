@@ -21,19 +21,36 @@
                 <label class="form-label">
                     Author
                 </label>
-                <select
-                    name="author"
-                    class="form-select mb-4"
-                >
-                    <option value="">
-                        All authors
-                    </option>
+                <select name="author" class="form-select mb-4">
+                    <option value="">All authors</option>
                     {% for author in authors %}
-                    <option
-                        value="{{ author.id }}"
-                        {% if selected_author == author.id|stringformat:'s' %}selected{% endif %}
-                    >
+                    <option value="{{ author.id }}" {% if selected_author == author.id|stringformat:'s' %}selected{% endif %}>
                         {{ author.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <label class="form-label">
+                    Series
+                </label>
+                <select name="series" class="form-select mb-4">
+                    <option value="">All series</option>
+                    {% for s in series_list %}
+                    <option value="{{ s.id }}" {% if selected_series == s.id|stringformat:'s' %}selected{% endif %}>
+                        {{ s.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <label class="form-label">Publisher</label>
+                <select name="publisher" class="form-select mb-4">
+                    <option value="">All publishers</option>
+                    {% for p in publishers %}
+                    <option
+                        value="{{ p }}"
+                        {% if selected_publisher == p %}selected{% endif %}
+                    >
+                        {{ p }}
                     </option>
                     {% endfor %}
                 </select>

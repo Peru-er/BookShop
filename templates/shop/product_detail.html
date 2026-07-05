@@ -46,12 +46,17 @@
                 </h1>
 
                 <p class="product-author">
-                    {{ product.author }}
+                    <a href="{% url 'shop:author_detail' product.author.id %}" class="text-decoration-none text-custom-link">
+                        {{ product.author.name }}
+                    </a>
                 </p>
 
                 {% if product.publisher %}
                     <p class="product-publisher">
-                        {{ product.publisher }}
+                        Publisher:
+                        <a href="{% url 'shop:catalog' %}?publisher={{ product.publisher }}" class="text-custom-link">
+                            {{ product.publisher }}
+                        </a>
                     </p>
                 {% endif %}
 
@@ -138,7 +143,12 @@
                         <p><strong>Category</strong><br>{{ product.category }}</p>
 
                         {% if product.series %}
-                            <p><strong>Series</strong><br>{{ product.series }}</p>
+                            <p>
+                                <strong>Series</strong><br>
+                                <a href="{% url 'shop:catalog' %}?series={{ product.series.id }}" class="text-decoration-none text-custom-link">
+                                    {{ product.series.name }}
+                                </a>
+                            </p>
                         {% endif %}
 
                         <p><strong>Language</strong><br>{{ product.language }}</p>
@@ -181,13 +191,11 @@
                     Genres
                 </h3>
 
-                {% for genre in product.genres.all %}
-
-                    <span class="genre-pill">
-                        {{ genre.name }}
-                    </span>
-
-                {% endfor %}
+                <p class="product-genres-list">
+                    {% for genre in product.genres.all %}
+                        <a href="{% url 'shop:catalog' %}?genre={{ genre.id }}" class="genre-link">{{ genre.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
 
             </div>
 
