@@ -1,4 +1,6 @@
+
 from django.db import models
+from ecommerce_project import settings
 
 
 class Series(models.Model):
@@ -127,3 +129,17 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f'Image for {self.product.name}'
+
+
+class Waitlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    email = models.EmailField()
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='waitlist_subscribers')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_notified = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('email', 'product')
+
+    def __str__(self):
+        return f"{self.email} waiting for {self.product.name}"

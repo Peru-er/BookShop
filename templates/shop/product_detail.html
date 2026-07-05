@@ -116,12 +116,27 @@
                 {% else %}
 
                     <div class="mt-4">
-                        <button
-                            class="btn btn-disabled-stock w-100"
-                            disabled
-                        >
-                            Out of stock
-                        </button>
+                        <div class="product-card" style="background: #203127; border: 1px dashed #4d7358;">
+                            <h5 class="text-white mb-2" style="font-size: 1rem;">Notify me when available</h5>
+
+                            <form method="post" action="{% url 'shop:subscribe_to_stock' product.id %}">
+                                {% csrf_token %}
+
+                                {% if not request.user.is_authenticated %}
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        class="form-control mb-2"
+                                        placeholder="Enter your email"
+                                        required
+                                    >
+                                {% endif %}
+
+                                <button class="btn btn-custom w-100" type="submit">
+                                    Keep me updated
+                                </button>
+                            </form>
+                        </div>
                     </div>
 
                 {% endif %}

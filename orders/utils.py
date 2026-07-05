@@ -7,12 +7,12 @@ def send_order_confirmation_email(order):
     subject = f'Order confirmation #{order.order_number}'
 
     html_message = render_to_string(
-        'orders/emails/order_confirmation.html',
+        'emails/order_confirmation.html',
         {'order': order}
     )
 
     plain_message = (
-        f'Thank you for your order!\n\n'
+        f'Thank you for your order.\n\n'
         f'Order number: #{order.order_number}\n'
         f'Total amount: £{order.total_amount}\n\n'
         'Your order is now being processed.'
@@ -31,7 +31,7 @@ def send_order_status_email(order):
     subject = f'Order #{order.order_number} status updated'
 
     html_message = render_to_string(
-        'orders/emails/order_status.html',
+        'emails/order_status.html',
         {
             'order': order,
         }

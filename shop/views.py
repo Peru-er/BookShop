@@ -1,12 +1,16 @@
 from django.db.models import Q, Case, Value, When, IntegerField
 from django.core.cache import cache
 from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
+from django.shortcuts import redirect
+
 from .models import (
     Product,
     Category,
     Genre,
     Author,
     Series,
+    Waitlist
 )
 
 
@@ -159,3 +163,29 @@ def author_detail(request, pk):
         'author': author,
         'products': products
     })
+
+
+def subscribe_to_stock(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+
+        if request.user.is_authenticated:
+            email = request.user.email
+            user = request.user
+        else:
+            email = request.POST.get('email')
+            user = None
+
+        if not email:
+            messages.error(request, "Please provide a valid email address.")
+            return redirect('shop:product_detail', pk=product_id)
+
+        exists = Waitlist.objects.filter(email=email, product=product, is_notified=False).exists()
+
+        if exists:
+            messages.info(request, "You are already on the waitlist for this book.")
+        else:
+            Waitlist.objects.create(user=user, email=email, product=product)
+            messages.success(request, "We will notify you as soon as this book is back in stock.")
+
+    return redirect('shop:product_detail', pk=product_id)

@@ -93,6 +93,7 @@ class Order(models.Model):
                 and timezone.now() <= self.created_at + timedelta(hours=24)
         )
 
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
@@ -114,15 +115,11 @@ class OrderStatusHistory(models.Model):
 
 @receiver(pre_save, sender=Order)
 def restore_stock_on_cancelled(sender, instance, **kwargs):
-    # Если заказ уже существует в базе
     if instance.pk:
         try:
-            # Берем то, что сейчас лежит в базе данных (до сохранения)
             old_order = Order.objects.get(pk=instance.pk)
-
-            # Если старый статус НЕ был отменен, а новый стал 'cancelled'
             if old_order.status != 'cancelled' and instance.status == 'cancelled':
-                # Загружаем позиции заказа напрямую через модель OrderItem
+
                 items = OrderItem.objects.filter(order=instance)
 
                 for item in items:

@@ -3,9 +3,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.conf import settings
 from django.db.models import Max
 from django_ratelimit.decorators import ratelimit
 
@@ -268,13 +265,6 @@ def cancel_order(request, order_id):
             'This order can no longer be cancelled.'
         )
         return redirect('users:profile')
-
-    for item in order.items.all():
-        if item.product:
-            product = Product.objects.select_for_update().get(id=item.product.id)
-            product.stock += item.quantity
-            product.is_available = True
-            product.save()
 
     order.status = Order.Status.CANCELLED
     order.save(update_fields=['status'])
