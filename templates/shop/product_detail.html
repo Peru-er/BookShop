@@ -46,7 +46,7 @@
                 </h1>
 
                 <p class="product-author">
-                    <a href="{% url 'shop:author_detail' product.author.id %}" class="text-decoration-none text-custom-link">
+                    <a href="{% url 'shop:author_detail' product.author.id %}?from_product={{ product.id }}" class="text-decoration-none text-custom-link">
                         {{ product.author.name }}
                     </a>
                 </p>

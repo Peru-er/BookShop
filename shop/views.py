@@ -156,13 +156,22 @@ def product_detail(request, pk):
 
 def author_detail(request, pk):
     author = get_object_or_404(Author, pk=pk)
+    products = author.products.all()
 
-    products = Product.objects.filter(author=author).prefetch_related('images').order_by('name')
+    from_product_id = request.GET.get('from_product')
+    from_product = None
+    if from_product_id:
+        try:
+            from_product = Product.objects.get(id=from_product_id)
+        except Product.DoesNotExist:
+            pass
 
-    return render(request, 'shop/author_detail.html', {
+    context = {
         'author': author,
-        'products': products
-    })
+        'products': products,
+        'from_product': from_product,
+    }
+    return render(request, 'shop/author_detail.html', context)
 
 
 def subscribe_to_stock(request, product_id):
