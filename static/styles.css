@@ -741,8 +741,6 @@ footer {
 ========================================================= */
 
 .filter-card {
-    position: sticky;
-    top: 20px;
 
     padding: 28px;
 
@@ -1878,4 +1876,18 @@ textarea.form-control{
 .product-card .product-publisher a:hover {
     color: #78d35f;
     text-decoration: underline;
+}
+
+/* =========================================================
+   SETTINGS TABS CUSTOMIZATION
+========================================================= */
+
+#settingsTabs .nav-link.active {
+    background-color: #5fa64a !important;
+    color: white !important;
+}
+
+#settingsTabs .nav-link:not(.active):hover {
+    color: #78d35f !important;
+    background-color: rgba(255, 255, 255, 0.05);
 }
