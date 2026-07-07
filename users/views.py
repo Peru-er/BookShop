@@ -1,4 +1,5 @@
 
+from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
@@ -100,6 +101,7 @@ def profile(request):
         'wishlist_items': wishlist_items,
     })
 
+
 @login_required
 def profile_settings(request):
     profile_form = UserProfileForm(instance=request.user)
@@ -114,14 +116,26 @@ def profile_settings(request):
                 messages.success(request, 'Your personal information has been updated successfully.')
                 return redirect('users:settings')
 
-        # Если отправлена форма смены пароля
         elif 'change_password' in request.POST:
             password_form = PasswordChangeForm(user=request.user, data=request.POST)
             if password_form.is_valid():
                 user = password_form.save()
-
                 update_session_auth_hash(request, user)
                 messages.success(request, 'Your password has been changed successfully.')
+                return redirect('users:settings')
+
+        # Логика удаления аккаунта
+        elif 'delete_account' in request.POST:
+            password_to_check = request.POST.get('delete_password')
+
+            if request.user.check_password(password_to_check):
+                user = request.user
+                auth_logout(request)
+                user.delete()
+                messages.success(request, 'Your account has been deleted successfully.')
+                return redirect('shop:home')
+            else:
+                messages.error(request, 'Incorrect password. Account was not deleted.')
                 return redirect('users:settings')
 
     return render(request, 'users/settings.html', {

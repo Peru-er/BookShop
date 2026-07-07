@@ -1948,7 +1948,7 @@ textarea.form-control{
 
 .custom-hanging-tabs .nav-link {
     background: #1c221c !important;
-    /* ЦВЕТ РАМКИ: Строго в тон бокса профиля */
+
     border: 1px solid #355d3a !important;
     margin-top: -1px;
 
@@ -1971,13 +1971,10 @@ textarea.form-control{
     z-index: 1;
 }
 
-/* Первый таб оставляет свои стандартные 12px скругления,
-   чтобы идеально лечь на скругление бокса профиля */
 .custom-hanging-tabs .nav-item:first-child .nav-link {
     border-bottom-left-radius: 12px !important;
 }
 
-/* ИСПРАВЛЕНИЕ: Скругляем тот самый висящий свободный край СПРАВА у последнего таба */
 .custom-hanging-tabs .nav-item:last-child .nav-link {
     border-bottom-right-radius: 20px !important;
 }

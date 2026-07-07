@@ -1,5 +1,6 @@
 
 {% extends 'base.html' %}
+{% load static %}
 
 {% block breadcrumbs %}
 <nav aria-label="breadcrumb" class="mb-4">
@@ -25,6 +26,9 @@
                 </button>
                 <button class="nav-link text-start text-white mb-2" id="security-tab" data-bs-toggle="pill" data-bs-target="#security-pane" type="button" role="tab">
                     Security & Password
+                </button>
+                <button class="nav-link text-start text-danger mb-2" id="danger-tab" data-bs-toggle="pill" data-bs-target="#danger-pane" type="button" role="tab">
+                    Delete Account
                 </button>
             </div>
         </div>
@@ -78,17 +82,28 @@
                     </form>
                 </div>
 
+                <div class="tab-pane fade" id="danger-pane" role="tabpanel" aria-labelledby="danger-tab">
+                    <h4 class="section-title mb-3" style="font-size: 1.5rem;">Delete Account</h4>
+                    <p class="text-white-50 small mb-4">
+                        Once you delete your account, there is no going back. All your profile data, orders history, and wishlist items will be permanently erased.
+                    </p>
+
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="delete_password" class="form-label text-white-50">Confirm your current password</label>
+                            <input type="password" name="delete_password" id="delete_password" class="form-control" required placeholder="Enter password to confirm">
+                        </div>
+                        <button type="submit" name="delete_account" class="btn btn-custom-danger" onclick="return confirm('Are you sure you want to permanently delete your account?')">
+                            Delete My Account
+                        </button>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const passwordInputs = document.querySelectorAll('#security-pane input');
-        passwordInputs.forEach(input => {
-            input.classList.add('form-control');
-        });
-    });
-</script>
+<script src="{% static 'js/settings.js' %}"></script>
 {% endblock %}
