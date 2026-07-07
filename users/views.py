@@ -8,6 +8,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django_ratelimit.decorators import ratelimit
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.views.decorators.http import require_POST
 
 from users.models import Wishlist
 from cart.cart import merge_carts
@@ -79,16 +80,25 @@ def register(request):
 
 @login_required
 def profile(request):
+
     active_orders = Order.objects.filter(
         user=request.user
     ).prefetch_related('items__product').exclude(
         status__in=['delivered', 'cancelled']
     ).order_by('-created_at')
 
+    order_history = Order.objects.filter(
+        user=request.user,
+        status__in=['delivered', 'cancelled']
+    ).prefetch_related('items__product').order_by('-created_at')
+
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
+
     return render(request, 'users/profile.html', {
         'active_orders': active_orders,
+        'order_history': order_history,
+        'wishlist_items': wishlist_items,
     })
-
 
 @login_required
 def profile_settings(request):
@@ -129,16 +139,30 @@ def toggle_wishlist(request, product_id):
         if wish_item.exists():
             wish_item.delete()
             wished = False
+            message = f'"{product.name}" removed from wishlist.'
         else:
             Wishlist.objects.create(user=request.user, product=product)
             wished = True
+            message = f'"{product.name}" added to wishlist.'
 
-        return JsonResponse({'status': 'ok', 'wished': wished})
+        return JsonResponse({
+            'status': 'ok',
+            'wished': wished,
+            'message': message
+        })
 
-    return redirect(request.META.get('HTTP_REFERER', 'shop:catalog'))
+    return redirect(request.META.get('HTTP_REFERER', 'users:profile'))
 
 
 @login_required
 def wishlist_view(request):
     wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
     return render(request, 'users/wishlist.html', {'wishlist_items': wishlist_items})
+
+
+@login_required
+@require_POST
+def clear_wishlist(request):
+    Wishlist.objects.filter(user=request.user).delete()
+    messages.success(request, "Your wishlist has been cleared successfully.")
+    return redirect('users:profile')

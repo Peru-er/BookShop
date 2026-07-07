@@ -1879,7 +1879,7 @@ textarea.form-control{
 }
 
 /* =========================================================
-   SETTINGS TABS CUSTOMIZATION
+   SETTINGS TABS CUSTOMIZATION & PROFILE HANGING TABS
 ========================================================= */
 
 #settingsTabs .nav-link.active {
@@ -1890,4 +1890,114 @@ textarea.form-control{
 #settingsTabs .nav-link:not(.active):hover {
     color: #78d35f !important;
     background-color: rgba(255, 255, 255, 0.05);
+}
+
+.custom-profile-tabs {
+    border-bottom: 1px solid #355d3a !important;
+    background: #1c221c;
+}
+
+.custom-profile-tabs .nav-link {
+    border: none !important;
+    color: #8fd0a5 !important;
+    background: transparent !important;
+    padding: 12px 20px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+}
+
+.custom-profile-tabs .nav-link:hover {
+    color: #78d35f !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.custom-profile-tabs .nav-link.active {
+    color: #78d35f !important;
+    background: transparent !important;
+    border-bottom: 2px solid #5fa64a !important;
+    font-weight: 600;
+}
+
+.profile-container .tab-content {
+    min-height: 450px;
+    position: relative;
+}
+
+.book-card-fade-out {
+    opacity: 0 !important;
+    transform: scale(0.9) translateY(10px);
+    transition: all 0.4s ease-in-out !important;
+}
+
+.custom-hanging-tabs {
+    border-bottom: none !important;
+    display: flex;
+    gap: 0px;
+    padding-left: 0px;
+    margin: 0;
+    height: 48px;
+    align-items: flex-start;
+}
+
+.custom-hanging-tabs .nav-item {
+    margin: 0;
+    height: 100%;
+}
+
+.custom-hanging-tabs .nav-link {
+    background: #1c221c !important;
+    /* ЦВЕТ РАМКИ: Строго в тон бокса профиля */
+    border: 1px solid #355d3a !important;
+    margin-top: -1px;
+
+    border-bottom-left-radius: 12px !important;
+    border-bottom-right-radius: 12px !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+
+    color: #8fd0a5 !important;
+    height: 48px;
+    padding: 0 24px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    position: relative;
+    z-index: 1;
+}
+
+/* Первый таб оставляет свои стандартные 12px скругления,
+   чтобы идеально лечь на скругление бокса профиля */
+.custom-hanging-tabs .nav-item:first-child .nav-link {
+    border-bottom-left-radius: 12px !important;
+}
+
+/* ИСПРАВЛЕНИЕ: Скругляем тот самый висящий свободный край СПРАВА у последнего таба */
+.custom-hanging-tabs .nav-item:last-child .nav-link {
+    border-bottom-right-radius: 20px !important;
+}
+
+.custom-hanging-tabs .nav-item:not(:first-child) .nav-link {
+    margin-left: -1px;
+}
+
+.custom-hanging-tabs .nav-link:hover {
+    color: #78d35f !important;
+    background: #222b22 !important;
+    z-index: 2;
+}
+
+.custom-hanging-tabs .nav-link.active {
+    color: #78d35f !important;
+    background: #222822 !important;
+    border-color: #355d3a !important;
+    border-top: none !important;
+    font-weight: 600;
+    z-index: 3;
+    box-shadow: none !important;
 }

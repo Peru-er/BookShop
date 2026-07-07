@@ -9,7 +9,7 @@ from .cart import get_cart
 
 def cart_detail(request):
     cart = get_cart(request)
-    return render(request, 'cart/detail.html', {'cart': cart})
+    return render(request, 'cart/cart_detail.html', {'cart': cart})
 
 
 @require_POST
@@ -86,24 +86,13 @@ def cart_remove(request, product_id):
     cart = get_cart(request)
     product = get_object_or_404(Product, id=product_id)
 
-    total_items_before = len(cart)
-
     cart.remove(product)
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get(
+            'Accept') == 'application/json':
         return JsonResponse(get_cart_data(cart))
 
     messages.success(request, f'Item "{product.name}" removed from cart')
-
-    next_url = request.POST.get('next')
-    if next_url:
-
-        if total_items_before > 1:
-            return redirect(next_url)
-        else:
-            messages.warning(request, 'Your cart is now empty.')
-            return redirect('cart:cart_detail')
-
     return redirect('cart:cart_detail')
 
 
@@ -111,14 +100,26 @@ def cart_remove(request, product_id):
 def cart_update(request, product_id):
     cart = get_cart(request)
     product = get_object_or_404(Product, id=product_id)
-    quantity = int(request.POST.get('quantity', 1))
+
+    import json
+    if request.content_type == 'application/json':
+        data = json.loads(request.body)
+        quantity = int(data.get('quantity', 1))
+    else:
+        quantity = int(request.POST.get('quantity', 1))
 
     if quantity > 0:
         cart.add(product=product, quantity=quantity, update_quantity=True)
-        messages.success(request, 'Cart has been updated')
+        if request.headers.get('x-requested-with') != 'XMLHttpRequest':
+            messages.success(request, 'Cart has been updated')
     else:
         cart.remove(product)
-        messages.success(request, 'Item removed from cart')
+        if request.headers.get('x-requested-with') != 'XMLHttpRequest':
+            messages.success(request, 'Item removed from cart')
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get(
+            'Accept') == 'application/json':
+        return JsonResponse(get_cart_data(cart))
 
     next_url = request.POST.get('next')
     if next_url and len(cart) > 0:

@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
 
-{% block breadcrumbs %}
+{% extends 'base.html' %}
+{% load static %} {% block breadcrumbs %}
 <nav aria-label="breadcrumb" class="mb-4">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
@@ -40,33 +40,22 @@
                 {% endif %}
 
                 <div>
-
                     <h4 class="cart-title">
                         {{ item.product.name }}
                     </h4>
-
                     <p class="cart-author">
                         {{ item.product.author }}
                     </p>
-
                     <p class="cart-price">
                         £{{ item.price }}
                     </p>
-
                 </div>
 
             </div>
 
             <div class="cart-actions">
 
-                <form
-                    method="post"
-                    action="{% url 'cart:cart_update' item.product.id %}"
-                    class="quantity-form"
-                >
-
-                    {% csrf_token %}
-
+                <div class="quantity-form">
                     <button
                         type="button"
                         class="quantity-btn"
@@ -81,7 +70,8 @@
                         value="{{ item.quantity }}"
                         min="1"
                         class="quantity-input"
-                        onchange="this.form.submit()"
+                        data-product-id="{{ item.product.id }}"
+                        readonly
                     >
 
                     <button
@@ -91,10 +81,9 @@
                     >
                         +
                     </button>
+                </div>
 
-                </form>
-
-                <div class="cart-total">
+                <div class="cart-total" id="item-total-{{ item.product.id }}">
                     £{{ item.total_price }}
                 </div>
 
@@ -102,16 +91,13 @@
                     method="post"
                     action="{% url 'cart:cart_remove' item.product.id %}"
                 >
-
                     {% csrf_token %}
-
                     <button
                         class="btn btn-custom-danger"
                         type="submit"
                     >
                         Remove
                     </button>
-
                 </form>
 
             </div>
@@ -123,15 +109,12 @@
         <div class="cart-summary">
 
             <div>
-
                 <h3>
                     Total
                 </h3>
-
-                <h2 class="book-price">
+                <h2 class="book-price" id="cart-global-total">
                     £{{ cart.get_total_price }}
                 </h2>
-
             </div>
 
             <div class="cart-buttons">
@@ -149,16 +132,13 @@
                     class="d-inline"
                     onsubmit="return confirm('Clear your cart?');"
                 >
-
                     {% csrf_token %}
-
                     <button
                         class="btn btn-custom-danger"
                         type="submit"
                     >
                         Clear Cart
                     </button>
-
                 </form>
 
                 <a
@@ -175,22 +155,18 @@
     {% else %}
 
         <div class="empty-orders">
-
             <h3>
                 Your cart is empty
             </h3>
-
             <p>
                 Looks like you haven't added anything yet.
             </p>
-
             <a
                 href="{% url 'shop:catalog' %}"
                 class="btn btn-custom"
             >
                 Go to shopping
             </a>
-
         </div>
 
     {% endif %}
