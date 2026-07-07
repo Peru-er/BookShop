@@ -163,16 +163,14 @@
                     {% endfor %}
                 </select>
 
-                <label class="form-label">
-                    Price
-                </label>
+                <label class="form-label">Price</label>
                 <div class="row g-2 mb-4">
                     <div class="col">
                         <input
                             type="number"
                             class="form-control"
                             name="min_price"
-                            value="{{ min_price }}"
+                            value="{% if min_price %}{{ min_price }}{% endif %}"
                             placeholder="Min"
                             min="0"
                         >
@@ -182,7 +180,7 @@
                             type="number"
                             class="form-control"
                             name="max_price"
-                            value="{{ max_price }}"
+                            value="{% if max_price %}{{ max_price }}{% endif %}"
                             placeholder="Max"
                             min="0"
                         >
@@ -217,97 +215,95 @@
 
             {% for product in products %}
 
-            <div class="col-sm-6 col-lg-6 col-xl-3">
+                {% if product.name %}
 
-                <div class="book-card {% if product.stock == 0 %}book-out-of-stock{% endif %}">
+                    <div class="col-sm-6 col-lg-6 col-xl-3">
 
-                    <a
-                        href="{% url 'shop:product_detail' product.id %}"
-                        class="book-link"
-                    >
+                        <div class="book-card {% if product.stock == 0 %}book-out-of-stock{% endif %} position-relative">
 
-                        {% if product.images.first %}
+                            {% if request.user.is_authenticated %}
+                                <a href="#"
+                                   class="position-absolute end-0 top-0 m-3 p-1 text-decoration-none wishlist-toggle"
+                                   data-product-id="{{ product.id }}"
+                                   style="z-index: 10; line-height: 1; display: inline-flex; align-items: center; justify-content: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         width="22"
+                                         height="22"
+                                         fill="{% if product.id in wished_products_ids %}#6d3232{% else %}rgba(255, 255, 255, 0.8){% endif %}"
+                                         class="bi bi-heart-fill wishlist-icon"
+                                         viewBox="0 0 16 16"
+                                         style="filter: drop-shadow(0px 1px 2px rgba(0,0,0,0.4)); transition: transform 0.2s ease, fill 0.2s ease;">
+                                        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                    </svg>
+                                </a>
+                            {% endif %}
 
-                            <img
-                                src="{{ product.images.first.image.url }}"
-                                class="book-cover"
-                            >
+                            <a href="{% url 'shop:product_detail' product.id %}" class="book-link text-decoration-none">
 
-                        {% endif %}
+                                {% if product.images.first %}
+                                    <img src="{{ product.images.first.image.url }}" class="img-fluid" alt="{{ product.name }}">
+                                {% else %}
+                                    <div class="no-image">No image available</div>
+                                {% endif %}
 
-                        <div class="card-body">
+                                <div class="card-body">
+                                    <h5 class="book-title">{{ product.name }}</h5>
+                                    <p class="book-author">{{ product.author }}</p>
+                                    <p class="book-description">{{ product.description|truncatewords:14 }}</p>
+                                    <h5 class="book-price">£{{ product.price }}</h5>
+                                </div>
 
-                            <h5 class="book-title">
-                                {{ product.name }}
-                            </h5>
+                            </a>
 
-                            <p class="book-author">
-                                {{ product.author }}
-                            </p>
 
-                            <p class="book-description">
-                                {{ product.description|truncatewords:14 }}
-                            </p>
+                            <div class="book-footer">
 
-                            <h5 class="book-price">
-                                £{{ product.price }}
-                            </h5>
+                                {% if product.stock > 0 %}
+
+                                <form method="post" action="{% url 'cart:cart_add' product.id %}" class="ajax-add-to-cart-form" data-product-id="{{ product.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button class="btn btn-custom w-100" type="submit">
+                                        Add to cart
+                                    </button>
+                                </form>
+
+                                {% else %}
+
+                                <button
+                                    class="btn btn-disabled-stock w-100"
+                                    disabled
+                                >
+                                    Out of stock
+                                </button>
+
+                                {% endif %}
+
+                            </div>
 
                         </div>
 
-                    </a>
+                    </div>
 
+                {% endif %}
 
-                    <div class="book-footer">
+            {% empty %}
 
-                        {% if product.stock > 0 %}
+                <div class="col-12">
 
-                        <form method="post" action="{% url 'cart:cart_add' product.id %}" class="ajax-add-to-cart-form" data-product-id="{{ product.id }}">
-                            {% csrf_token %}
-                            <input type="hidden" name="quantity" value="1">
-                            <button class="btn btn-custom w-100" type="submit">
-                                Add to cart
-                            </button>
-                        </form>
+                    <div class="empty-orders">
 
-                        {% else %}
+                        <h4>
+                            No books found
+                        </h4>
 
-                        <button
-                            class="btn btn-disabled-stock w-100"
-                            disabled
-                        >
-                            Out of stock
-                        </button>
-
-                        {% endif %}
+                        <p>
+                            Try changing the filters or search query.
+                        </p>
 
                     </div>
 
                 </div>
-
-            </div>
-
-            {% empty %}
-
-            <div class="col-12">
-
-                <div class="empty-orders">
-
-                    <h4>
-
-                        No books found
-
-                    </h4>
-
-                    <p>
-
-                        Try changing the filters or search query.
-
-                    </p>
-
-                </div>
-
-            </div>
 
             {% endfor %}
 
@@ -317,20 +313,6 @@
 
 </div>
 
-<script>
-    document.getElementById('genre-search').addEventListener('input', function() {
-        let filter = this.value.toLowerCase();
-        let items = document.querySelectorAll('#genres-list .genre-item');
-
-        items.forEach(function(item) {
-            let genreName = item.querySelector('.genre-name').textContent.toLowerCase();
-            if (genreName.includes(filter)) {
-                item.style.setProperty('display', 'block', 'important');
-            } else {
-                item.style.setProperty('display', 'none', 'important');
-            }
-        });
-    });
-</script>
+<script src="{% static 'js/genre_search.js' %}"></script>
 
 {% endblock %}

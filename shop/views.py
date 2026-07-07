@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.shortcuts import redirect
 
+from users.models import Wishlist
 from .models import (
     Product,
     Category,
@@ -16,10 +17,18 @@ from .models import (
 
 def home(request):
     products = Product.objects.select_related('author').prefetch_related('images').all()[:8]
-    return render(request, 'shop/home.html', {'products': products})
+
+    wished_products_ids = []
+    if request.user.is_authenticated:
+        wished_products_ids = list(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+
+    return render(request, 'shop/home.html', {
+        'products': products,
+        'wished_products_ids': wished_products_ids
+    })
+
 
 def catalog(request):
-
     products = Product.objects.select_related('author', 'series').prefetch_related('images').annotate(
         out_of_stock=Case(
             When(stock=0, then=Value(1)),
@@ -27,6 +36,10 @@ def catalog(request):
             output_field=IntegerField(),
         )
     ).order_by('out_of_stock', 'name')
+
+    wished_products_ids = []
+    if request.user.is_authenticated:
+        wished_products_ids = list(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
 
     categories = cache.get('shop_categories')
     if not categories:
@@ -147,11 +160,29 @@ def catalog(request):
         'selected_age_rating': age_rating,
         'min_price': min_price,
         'max_price': max_price,
+
+        'wished_products_ids': wished_products_ids,
     })
 
+
 def product_detail(request, pk):
-    product = get_object_or_404(Product.objects.select_related('author', 'series').prefetch_related('genres'), pk=pk)
-    return render(request, 'shop/product_detail.html', {'product': product})
+
+    product = get_object_or_404(
+        Product.objects.select_related('author', 'series').prefetch_related('genres'),
+        pk=pk
+    )
+
+    is_wished = False
+
+    if request.user.is_authenticated:
+        is_wished = Wishlist.objects.filter(user=request.user, product=product).exists()
+
+    context = {
+        'product': product,
+        'is_wished': is_wished,
+    }
+
+    return render(request, 'shop/product_detail.html', context)
 
 
 def author_detail(request, pk):

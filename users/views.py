@@ -1,16 +1,19 @@
 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
+from django.http import JsonResponse
 from django.contrib.auth.views import LoginView, LogoutView
 from django_ratelimit.decorators import ratelimit
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 
+from users.models import Wishlist
 from cart.cart import merge_carts
 from orders.models import Order
 from .forms import RegisterForm, UserProfileForm
+from .models import Product
 
 
 class CustomLogoutView(LogoutView):
@@ -115,3 +118,27 @@ def profile_settings(request):
         'profile_form': profile_form,
         'password_form': password_form,
     })
+
+
+@login_required
+def toggle_wishlist(request, product_id):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        product = get_object_or_404(Product, id=product_id)
+        wish_item = Wishlist.objects.filter(user=request.user, product=product)
+
+        if wish_item.exists():
+            wish_item.delete()
+            wished = False
+        else:
+            Wishlist.objects.create(user=request.user, product=product)
+            wished = True
+
+        return JsonResponse({'status': 'ok', 'wished': wished})
+
+    return redirect(request.META.get('HTTP_REFERER', 'shop:catalog'))
+
+
+@login_required
+def wishlist_view(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
+    return render(request, 'users/wishlist.html', {'wishlist_items': wishlist_items})
