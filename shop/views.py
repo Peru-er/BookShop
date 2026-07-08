@@ -61,6 +61,8 @@ def catalog(request):
         series_list = Series.objects.all().order_by('name')
         cache.set('shop_series', series_list, 86400)
 
+    query = request.GET.get('q')
+
     author = request.GET.get('author')
     series = request.GET.get('series')
     publisher = request.GET.get('publisher')
@@ -71,6 +73,11 @@ def catalog(request):
     age_rating = request.GET.get('age_rating')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
+
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) | Q(author__name__icontains=query)
+        ).distinct()
 
     if author:
         products = products.filter(author_id=author)
@@ -140,6 +147,7 @@ def catalog(request):
 
     return render(request, 'shop/catalog.html', {
         'products': products,
+        'query': query,
         'categories': categories,
         'genres': genres,
         'authors': authors,

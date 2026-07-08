@@ -17,7 +17,10 @@
                 Filters
             </h3>
 
-            <form method="get">
+            <form method="get" action="{% url 'shop:catalog' %}">
+                {% if query %}
+                    <input type="hidden" name="q" value="{{ query }}">
+                {% endif %}
 
                 <label class="form-label">
                     Author

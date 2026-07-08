@@ -141,9 +141,97 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
+.btn-icon {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.btn-icon:hover {
+    transform: scale(1.08);
+}
+
+.btn-icon svg {
+    transition: fill 0.2s ease;
+}
+
+.btn-icon:hover svg {
+    fill: #78d35f;
+}
+
+.no-caret::after {
+    display: none !important;
+}
+
+.btn-icon:focus, .btn-icon:active, .dropdown-toggle:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.custom-dropdown {
+    background: #222822 !important;
+    border: 1px solid #355d3a !important;
+    border-radius: 14px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,.5) !important;
+    padding: 8px 0 !important;
+
+    right: 0 !important;
+    left: auto !important;
+}
+
+.custom-dropdown .dropdown-item {
+    color: #d8d8d8 !important;
+    padding: 8px 20px !important;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.custom-dropdown .dropdown-item:hover,
+.custom-dropdown .dropdown-item:focus,
+.custom-dropdown .dropdown-item:active {
+    background: #2d362d !important;
+    color: #78d35f !important;
+    outline: none !important;
+}
+
 /* =========================================================
    SEARCH
 ========================================================= */
+
+.btn-clear-search {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #8fd0a5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-clear-search:hover {
+    color: #78d35f;
+    transform: scale(1.1);
+}
+
+.btn-clear-search:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.search-box::-webkit-search-decoration,
+.search-box::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    display: none;
+}
 
 .search-box {
     width: 260px;
@@ -153,6 +241,7 @@ input[type="number"] {
     border-radius: 14px;
 
     color: white;
+    appearance: none;
 }
 
 .search-box::placeholder {
@@ -164,6 +253,14 @@ input[type="number"] {
     color: white;
     border-color: #7ac784;
     box-shadow: none;
+}
+
+.search-box::-webkit-search-decoration,
+.search-box::-webkit-search-cancel-button,
+.search-box::-webkit-search-results-button,
+.search-box::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    display: none;
 }
 
 /* =========================================================
