@@ -105,7 +105,6 @@ def register(request):
 
 @login_required
 def profile(request):
-
     active_orders = Order.objects.filter(
         user=request.user
     ).prefetch_related('items__product').exclude(
@@ -119,10 +118,20 @@ def profile(request):
 
     wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
 
+    recently_viewed_ids = request.session.get('recently_viewed', [])
+
+    recently_viewed_books = Product.objects.filter(id__in=recently_viewed_ids)
+
+    recently_viewed_books = sorted(
+        recently_viewed_books,
+        key=lambda x: recently_viewed_ids.index(x.id)
+    )
+
     return render(request, 'users/profile.html', {
         'active_orders': active_orders,
         'order_history': order_history,
         'wishlist_items': wishlist_items,
+        'recently_viewed_books': recently_viewed_books,
     })
 
 

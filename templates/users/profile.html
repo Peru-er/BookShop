@@ -17,7 +17,7 @@
 
 <div class="profile-container">
 
-    <div class="profile-card mb-0" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none;">
+    <div class="profile-card">
         <div class="profile-avatar">
             {{ request.user.username|first|upper }}
         </div>
@@ -50,6 +50,11 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="wishlist-tab" data-bs-toggle="tab" data-bs-target="#wishlist-pane" type="button" role="tab" aria-controls="wishlist-pane" aria-selected="false">
                 Wishlist
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="recently-tab" data-bs-toggle="tab" data-bs-target="#recently-pane" type="button" role="tab" aria-controls="recently-pane" aria-selected="false">
+                Recently Viewed
             </button>
         </li>
     </ul>
@@ -210,6 +215,49 @@
                         <p>Save books you like to find them easily later.</p>
                         <a href="{% url 'shop:catalog' %}" class="btn btn-custom">Explore Catalogue</a>
                     </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="tab-pane fade" id="recently-pane" role="tabpanel" aria-labelledby="recently-tab" tabindex="0">
+            {% if recently_viewed_books %}
+                <div class="row g-4">
+                    {% for book in recently_viewed_books %}
+                        <div class="col-sm-6 col-md-4 col-xl-3 book-item-container">
+                            <div class="book-card {% if book.stock == 0 %}book-out-of-stock{% endif %}">
+                                <a href="{% url 'shop:product_detail' book.id %}" class="book-link text-decoration-none">
+                                    {% if book.images.first %}
+                                        <img src="{{ book.images.first.image.url }}" class="img-fluid" alt="{{ book.name }}">
+                                    {% else %}
+                                        <div class="no-image">No image available</div>
+                                    {% endif %}
+
+                                    <div class="card-body">
+                                        <h5 class="book-title">{{ book.name }}</h5>
+                                        <p class="book-author">{{ book.author }}</p>
+                                        <h5 class="book-price">£{{ book.price }}</h5>
+                                    </div>
+                                </a>
+                                <div class="book-footer">
+                                    {% if book.stock > 0 %}
+                                        <form method="post" action="{% url 'cart:cart_add' book.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button class="btn btn-custom w-100" type="submit">Add to cart</button>
+                                        </form>
+                                    {% else %}
+                                        <button class="btn btn-disabled-stock w-100" disabled>Out of stock</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-orders">
+                    <h4>No recently viewed books</h4>
+                    <p>Books you look at will appear here so you don't lose them.</p>
+                    <a href="{% url 'shop:catalog' %}" class="btn btn-custom">Explore Catalogue</a>
                 </div>
             {% endif %}
         </div>

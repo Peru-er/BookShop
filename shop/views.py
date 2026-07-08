@@ -166,14 +166,23 @@ def catalog(request):
 
 
 def product_detail(request, pk):
-
     product = get_object_or_404(
         Product.objects.select_related('author', 'series').prefetch_related('genres'),
         pk=pk
     )
 
-    is_wished = False
+    recently_viewed = request.session.get('recently_viewed', [])
 
+    if product.id in recently_viewed:
+        recently_viewed.remove(product.id)
+
+    recently_viewed.insert(0, product.id)
+
+    request.session['recently_viewed'] = recently_viewed[:10]
+
+    request.session.modified = True
+
+    is_wished = False
     if request.user.is_authenticated:
         is_wished = Wishlist.objects.filter(user=request.user, product=product).exists()
 
@@ -181,7 +190,6 @@ def product_detail(request, pk):
         'product': product,
         'is_wished': is_wished,
     }
-
     return render(request, 'shop/product_detail.html', context)
 
 
