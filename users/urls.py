@@ -15,6 +15,7 @@ urlpatterns = [
     path('wishlist/toggle/<int:product_id>/', views.toggle_wishlist, name='toggle_wishlist'),
     path('wishlist/', views.wishlist_view, name='wishlist'),
     path('wishlist/clear/', views.clear_wishlist, name='clear_wishlist'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
     path(
         'password-reset/',

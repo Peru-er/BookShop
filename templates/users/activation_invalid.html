@@ -1,0 +1,17 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container text-center">
+        <h2 class="form-title" style="color: #ff8b8b;">Activation Link Invalid</h2>
+        <p class="form-subtitle">The activation link is invalid or has already been used.</p>
+        <p style="color: #b8c4b7; text-align: center; font-size: 0.95rem;">
+            Please try to register again or contact support if you believe this is an error.
+        </p>
+        <div class="form-footer" style="margin-top: 30px;">
+            <a href="{% url 'users:register' %}" class="btn btn-custom px-4">Back to Registration</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

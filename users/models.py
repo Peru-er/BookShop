@@ -8,7 +8,7 @@ from shop.models import Product
 
 
 class CustomUser(AbstractUser):
-    pass
+    is_email_verified = models.BooleanField(default=False)
 
 
 class UserProfile(models.Model):
