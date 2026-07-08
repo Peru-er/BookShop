@@ -69,11 +69,26 @@
                             <div class="mb-3">
                                 <label class="form-label text-white-50">{{ field.label }}</label>
                                 {{ field }}
-                                {% if field.help_text %}
+
+                                {% if field.help_text and field.name != 'password1' and field.name != 'new_password1' %}
                                     <div class="form-text text-muted x-small" style="font-size: 0.75rem;">{{ field.help_text }}</div>
                                 {% endif %}
-                                {% if field.errors %}
+
+                                {% if field.errors and field.name != 'password1' and field.name != 'new_password1' %}
                                     <div class="text-danger small">{{ field.errors }}</div>
+                                {% endif %}
+
+                                {% if field.name == 'new_password1' or field.name == 'password1' %}
+                                    <div class="password-requirements mt-2 p-3 bg-dark bg-opacity-50 border border-secondary" style="border-radius: 10px; display: none;">
+                                        <p class="small text-white-50 mb-2">Password must contain:</p>
+                                        <ul class="list-unstyled mb-0" style="font-size: 0.85rem;">
+                                            <li class="req-length text-danger">✖ At least 8 characters</li>
+                                            <li class="req-number text-danger">✖ At least one number</li>
+                                            <li class="req-uppercase text-danger">✖ At least one uppercase letter</li>
+                                            <li class="req-numeric text-danger">✖ Not be entirely numeric</li>
+                                            <li class="req-similarity text-danger">✖ Not be too similar to your username or email</li>
+                                        </ul>
+                                    </div>
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -106,4 +121,5 @@
 </div>
 
 <script src="{% static 'js/settings.js' %}"></script>
+<script src="{% static 'js/password_validator.js' %}"></script>
 {% endblock %}

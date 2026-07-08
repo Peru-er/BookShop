@@ -1,5 +1,6 @@
 
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Register{% endblock %}
 
@@ -37,6 +38,18 @@
                     </small>
                 {% endif %}
 
+                {% if field.name == 'password1' %}
+                    <div id="password-requirements" class="mt-2 p-3 bg-dark bg-opacity-50 border border-secondary" style="border-radius: 10px; display: none;">
+                        <p class="small text-white-50 mb-2">Password must contain:</p>
+                        <ul class="list-unstyled mb-0" style="font-size: 0.85rem;">
+                            <li id="req-length" class="text-danger">✖ At least 8 characters</li>
+                            <li id="req-number" class="text-danger">✖ At least one number</li>
+                            <li id="req-uppercase" class="text-danger">✖ At least one uppercase letter</li>
+                            <li class="req-numeric text-danger">✖ Not be entirely numeric</li>
+                        </ul>
+                    </div>
+                {% endif %}
+
             </div>
 
         {% endfor %}
@@ -58,5 +71,7 @@
     </p>
 
 </div>
+
+<script src="{% static 'js/password_validator.js' %}"></script>
 
 {% endblock %}
