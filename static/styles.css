@@ -2103,3 +2103,111 @@ textarea.form-control{
     z-index: 3;
     box-shadow: none !important;
 }
+
+
+/* =========================================================
+   HOME PAGE SCROLL SLIDERS
+========================================================= */
+
+.slider-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.books-scroll-container {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 5px 20px 5px;
+
+    scrollbar-width: none;
+}
+
+.books-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.slider-wrapper .book-card {
+    min-width: 240px;
+    max-width: 240px;
+    flex: 0 0 auto;
+}
+
+.slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background-color: #203127;
+    border: 1px solid #476a50;
+    border-radius: 50%;
+    color: #8ecf99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.slider-arrow:hover {
+    background-color: #24362c;
+    border-color: #78d35f;
+    color: #white;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.slider-arrow.left-arrow {
+    left: -22px;
+}
+
+.slider-arrow.right-arrow {
+    right: -22px;
+}
+
+.slider-arrow:disabled,
+.slider-arrow.disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+    pointer-events: none;
+    border-color: #476a50;
+    color: #bbbbbb;
+}
+
+/* =========================================================
+   MAIN CAROUSEL ARROWS
+========================================================= */
+
+.main-banner-arrow {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(32, 49, 39, 0.7) !important;
+    border: 1px solid #476a50;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+#homeCarousel:hover .main-banner-arrow {
+    opacity: 0.8;
+}
+
+#homeCarousel .main-banner-arrow:hover {
+    opacity: 1;
+    background-color: #24362c !important;
+    border-color: #78d35f;
+    color: #fff;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.main-banner-arrow .carousel-control-prev-icon,
+.main-banner-arrow .carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+}

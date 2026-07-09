@@ -1,0 +1,39 @@
+
+{% extends 'base.html' %}
+
+{% block title %}About Us - BubuKappa{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">About Us</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <section class="p-4 p-md-5 rounded shadow" style="background: #203127; border: 1px solid #4d7358;">
+            <div class="row align-items-center g-4">
+                <div class="col-md-9">
+                    <h2 style="font-family: 'Cormorant Garamond', serif; color: #8fd0a5; font-size: 2.5rem;" class="mb-4">About BubuKappa</h2>
+
+                    <p class="text-white-50" style="font-size: 1.1rem; line-height: 1.7; mb-3;">
+                        Welcome to <strong>BubuKappa</strong>! This platform is a course project designed to simulate a modern, high-performance online bookstore specializing in books, manga and light novels.
+                    </p>
+
+                    <p class="text-white-50" style="font-size: 1.1rem; line-height: 1.7; mb-3;">
+                        The goal of this project is to implement robust database structures, deep filtering mechanisms, asynchronous cart workflows (AJAX), and personalized user sessions. Every feature you interact with—from search queries to the simulated stock waitlists—has been developed from scratch using Django and Bootstrap 5.
+                    </p>
+
+                    <p class="text-white-50 m-0" style="font-size: 1.1rem; line-height: 1.7;">
+                        Thank you for visiting my work. Feel free to test out all functionalities.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

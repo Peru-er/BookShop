@@ -11,21 +11,41 @@ from .models import (
     Genre,
     Author,
     Series,
-    Waitlist
+    Waitlist,
+    CarouselBanner
 )
 
 
 def home(request):
-    products = Product.objects.select_related('author').prefetch_related('images').all()[:8]
+    banners = CarouselBanner.objects.filter(is_active=True).order_by('-created_at')
+
+    # Base query for optimized performance
+    base_products = Product.objects.select_related('author').prefetch_related('images').annotate(
+        out_of_stock=Case(
+            When(stock=0, then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField(),
+        )
+    )
+
+    new_arrivals = base_products.order_by('out_of_stock', '-id')[:8]
+
+    bestsellers = base_products.order_by('out_of_stock', 'id')[:8]
 
     wished_products_ids = []
     if request.user.is_authenticated:
         wished_products_ids = list(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
 
     return render(request, 'shop/home.html', {
-        'products': products,
+        'banners': banners,
+        'new_arrivals': new_arrivals,
+        'bestsellers': bestsellers,
         'wished_products_ids': wished_products_ids
     })
+
+
+def about(request):
+    return render(request, 'shop/about.html')
 
 
 def catalog(request):

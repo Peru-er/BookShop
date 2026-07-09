@@ -146,3 +146,19 @@ class Waitlist(models.Model):
 
     def __str__(self):
         return f"{self.email} waiting for {self.product.name}"
+
+
+class CarouselBanner(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Banner Title")
+    description = models.TextField(blank=True, verbose_name="Description / Promotion")
+    image = models.ImageField(upload_to='carousel_banners/', verbose_name="Banner Image")
+    link = models.CharField(max_length=200, blank=True, help_text="URL path where the user redirects (e.g., /catalog/?category=1)")
+    is_active = models.BooleanField(default=True, verbose_name="Is Active")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Carousel Banner"
+        verbose_name_plural = "Carousel Banners"
+
+    def __str__(self):
+        return self.title

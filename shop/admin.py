@@ -6,8 +6,16 @@ from .models import (
     ProductImage,
     Author,
     Series,
-    Genre
+    Genre,
+    CarouselBanner
 )
+
+
+@admin.register(CarouselBanner)
+class CarouselBannerAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_active', 'created_at')
+    list_filter = ('is_active',)
+    search_fields = ('title', 'description')
 
 
 @admin.register(Genre)

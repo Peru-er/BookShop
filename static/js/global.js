@@ -4,6 +4,51 @@ document.addEventListener("DOMContentLoaded", function() {
     const searchInput = document.getElementById('search-input');
     const clearBtn = document.getElementById('search-clear-btn');
     const searchForm = document.getElementById('search-form');
+        const wrappers = document.querySelectorAll('.slider-wrapper');
+
+    wrappers.forEach(wrapper => {
+        const container = wrapper.querySelector('.books-scroll-container');
+        const leftArrow = wrapper.querySelector('.left-arrow');
+        const rightArrow = wrapper.querySelector('.right-arrow');
+
+        if (!container || !leftArrow || !rightArrow) return;
+
+        const scrollStep = (240 + 16) * 2;
+
+        function updateArrowState() {
+            const scrollLeft = Math.ceil(container.scrollLeft);
+            const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+            if (scrollLeft <= 0) {
+                leftArrow.classList.add('disabled');
+                leftArrow.setAttribute('disabled', 'true');
+            } else {
+                leftArrow.classList.remove('disabled');
+                leftArrow.removeAttribute('disabled');
+            }
+
+            if (scrollLeft >= maxScrollLeft - 2) {
+                rightArrow.classList.add('disabled');
+                rightArrow.setAttribute('disabled', 'true');
+            } else {
+                rightArrow.classList.remove('disabled');
+                rightArrow.removeAttribute('disabled');
+            }
+        }
+
+        leftArrow.addEventListener('click', () => {
+            container.scrollLeft -= scrollStep;
+        });
+
+        rightArrow.addEventListener('click', () => {
+            container.scrollLeft += scrollStep;
+        });
+
+        container.addEventListener('scroll', updateArrowState);
+
+        window.addEventListener('resize', updateArrowState);
+        setTimeout(updateArrowState, 300);
+    });
 
     if (searchInput && clearBtn) {
 
@@ -57,3 +102,5 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+
