@@ -13,7 +13,7 @@
         <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
         {% endfor %}
     </div>
-    
+
     <div class="carousel-inner">
         {% for banner in banners %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="3000">

@@ -1,5 +1,6 @@
 
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}About Us - BubuKappa{% endblock %}
 
@@ -20,17 +21,20 @@
                 <div class="col-md-9">
                     <h2 style="font-family: 'Cormorant Garamond', serif; color: #8fd0a5; font-size: 2.5rem;" class="mb-4">About BubuKappa</h2>
 
-                    <p class="text-white-50" style="font-size: 1.1rem; line-height: 1.7; mb-3;">
-                        Welcome to <strong>BubuKappa</strong>! This platform is a course project designed to simulate a modern, high-performance online bookstore specializing in books, manga and light novels.
+                    <p class="text-white-50" style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 1rem;">
+                        Welcome to BubuKappa, a cozy online sanctuary for readers, specializing in manga, light novels, and classic literature. This platform is a fully featured personal graduation project designed to demonstrate clean web architecture, robust database relations, and dynamic user interfaces.
                     </p>
 
-                    <p class="text-white-50" style="font-size: 1.1rem; line-height: 1.7; mb-3;">
-                        The goal of this project is to implement robust database structures, deep filtering mechanisms, asynchronous cart workflows (AJAX), and personalized user sessions. Every feature you interact with—from search queries to the simulated stock waitlists—has been developed from scratch using Django and Bootstrap 5.
+                    <p class="text-white-50" style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 1rem;">
+                        Under the conceptual guidance of our mascot, the capybara, this bookstore features complex database querying, deep catalog filtering, asynchronous shopping cart updates, and personalized user session tracking. Every single system has been constructed from scratch using Python, Django, and modern JavaScript.
                     </p>
 
                     <p class="text-white-50 m-0" style="font-size: 1.1rem; line-height: 1.7;">
-                        Thank you for visiting my work. Feel free to test out all functionalities.
+                        Thank you for taking the time to explore this development showcase. Feel free to interact with all the features.
                     </p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <img src="{% static 'images/favicon.png' %}" alt="BubuKappa Mascot" class="img-fluid rounded-circle" style="max-width: 140px; border: 2px solid #4d7358; padding: 5px; background: #1c2721;">
                 </div>
             </div>
         </section>
