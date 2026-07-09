@@ -7,8 +7,31 @@ from .models import (
     Author,
     Series,
     Genre,
-    CarouselBanner
+    CarouselBanner,
+    Discount
 )
+
+
+@admin.register(Discount)
+class DiscountAdmin(admin.ModelAdmin):
+    list_display = ('name', 'discount_percent', 'start_date', 'end_date', 'is_active', 'is_currently_active')
+    list_filter = ('is_active', 'start_date', 'end_date')
+    search_fields = ('name',)
+
+    fieldsets = (
+        ('General Information', {
+            'fields': ('name', 'discount_percent', 'is_active')
+        }),
+        ('Duration Period', {
+            'fields': ('start_date', 'end_date')
+        }),
+        ('Apply Discount To', {
+            'description': 'Select targets for this discount. Leave fields blank if not applicable.',
+            'fields': ('categories', 'genres', 'series', 'products')
+        }),
+    )
+
+    autocomplete_fields = ['categories', 'genres', 'series', 'products']
 
 
 @admin.register(CarouselBanner)
@@ -53,6 +76,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'author', 'price', 'stock', 'is_available']
     list_filter = ['is_available', 'category']
     list_editable = ['price', 'stock', 'is_available']
+
+    search_fields = ['name', 'isbn', 'author__name']
 
     fieldsets = (
         ('Basic information', {

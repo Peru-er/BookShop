@@ -2211,3 +2211,31 @@ textarea.form-control{
     width: 20px;
     height: 20px;
 }
+
+/* =========================================================
+   DISCOUNT & PRICE STYLES
+========================================================= */
+.old-book-price {
+    text-decoration: line-through;
+    color: #6c757d !important;
+    font-size: 0.9rem;
+    margin-right: 8px;
+    font-weight: normal;
+}
+
+.new-book-price {
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+.discount-badge-tag {
+    background-color: #6d3232;
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-left: 6px;
+    display: inline-block;
+    vertical-align: middle;
+}

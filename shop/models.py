@@ -1,5 +1,8 @@
 
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+
 from ecommerce_project import settings
 
 
@@ -120,6 +123,47 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def get_active_discount(self):
+        now = timezone.now()
+
+        active_discounts = Discount.objects.filter(
+            is_active=True,
+            start_date__lte=now,
+            end_date__gte=now
+        )
+
+        product_discounts = active_discounts.filter(
+            models.Q(products=self) |
+            models.Q(categories=self.category) |
+            (models.Q(series=self.series) if self.series else models.Q(id__isnull=True)) |
+            models.Q(genres__in=self.genres.all())
+        )
+
+        global_discounts = active_discounts.filter(
+            products__isnull=True,
+            categories__isnull=True,
+            series__isnull=True,
+            genres__isnull=True
+        )
+
+        all_applicable_discounts = (product_discounts | global_discounts).distinct()
+
+        return all_applicable_discounts.order_by('-discount_percent').first()
+
+    @property
+    def current_price(self):
+
+        discount = self.get_active_discount()
+        if discount:
+            discount_amount = (self.price * discount.discount_percent) / 100
+            return round(self.price - discount_amount, 2)
+        return self.price
+
+    @property
+    def has_discount(self):
+
+        return self.get_active_discount() is not None
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(
@@ -162,3 +206,53 @@ class CarouselBanner(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Discount(models.Model):
+
+    name = models.CharField(max_length=150, verbose_name="Discount Name")
+    discount_percent = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(100)],
+        verbose_name="Discount Percent"
+    )
+    start_date = models.DateTimeField(verbose_name="Start Date")
+    end_date = models.DateTimeField(verbose_name="End Date")
+    is_active = models.BooleanField(default=True, verbose_name="Is Active")
+
+    categories = models.ManyToManyField(
+        'Category',
+        blank=True,
+        related_name='discounts',
+        verbose_name="Apply to Categories"
+    )
+    genres = models.ManyToManyField(
+        'Genre',
+        blank=True,
+        related_name='discounts',
+        verbose_name="Apply to Genres"
+    )
+    series = models.ManyToManyField(
+        'Series',
+        blank=True,
+        related_name='discounts',
+        verbose_name="Apply to Series"
+    )
+    products = models.ManyToManyField(
+        'Product',
+        blank=True,
+        related_name='discounts',
+        verbose_name="Apply to Specific Products"
+    )
+
+    class Meta:
+        verbose_name = "Discount"
+        verbose_name_plural = "Discounts"
+        ordering = ['-discount_percent']
+
+    def __str__(self):
+        return f"{self.name} (-{self.discount_percent}%)"
+
+    @property
+    def is_currently_active(self):
+        now = timezone.now()
+        return self.is_active and self.start_date <= now <= self.end_date

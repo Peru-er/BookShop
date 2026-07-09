@@ -1,3 +1,4 @@
+
 from decimal import Decimal
 from django.conf import settings
 from shop.models import Product
@@ -6,7 +7,6 @@ import uuid
 
 
 class SessionCart:
-
     def __init__(self, request):
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
@@ -22,7 +22,7 @@ class SessionCart:
         if product_id not in self.cart:
             self.cart[product_id] = {
                 'quantity': 0,
-                'price': str(product.price)
+                'price': str(product.current_price)
             }
 
         if update_quantity:
@@ -43,7 +43,8 @@ class SessionCart:
 
     def __iter__(self):
         product_ids = self.cart.keys()
-        products = Product.objects.filter(id__in=product_ids)
+
+        products = Product.objects.filter(id__in=product_ids).prefetch_related('discounts', 'category__discounts')
 
         custom_cart = {}
         for p_id, item in self.cart.items():
@@ -57,6 +58,8 @@ class SessionCart:
             if product_id in custom_cart:
                 custom_cart[product_id]['product'] = product
 
+                custom_cart[product_id]['price'] = product.current_price
+
         for item in custom_cart.values():
             item['total_price'] = item['price'] * item['quantity']
             yield item
@@ -65,7 +68,11 @@ class SessionCart:
         return sum(item['quantity'] for item in self.cart.values())
 
     def get_total_price(self):
-        return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
+
+        total = Decimal('0.00')
+        for item in self:
+            total += item['price'] * item['quantity']
+        return total
 
     def clear(self):
         del self.session[settings.CART_SESSION_ID]
@@ -73,7 +80,6 @@ class SessionCart:
 
 
 class DatabaseCart:
-
     def __init__(self, request):
         self.request = request
         self.user = request.user
@@ -103,19 +109,29 @@ class DatabaseCart:
         CartItem.objects.filter(cart=self.cart, product=product).delete()
 
     def __iter__(self):
-        for item in self.cart.items.select_related('product'):
+        items = self.cart.items.select_related(
+            'product', 'product__category', 'product__series'
+        ).prefetch_related(
+            'product__discounts', 'product__category__discounts', 'product__series__discounts'
+        )
+
+        for item in items:
+            current_price = item.product.current_price
             yield {
                 'product': item.product,
                 'quantity': item.quantity,
-                'price': item.product.price,
-                'total_price': item.product.price * item.quantity
+                'price': current_price,
+                'total_price': current_price * item.quantity
             }
 
     def __len__(self):
         return sum(item.quantity for item in self.cart.items.all())
 
     def get_total_price(self):
-        return sum(item.product.price * item.quantity for item in self.cart.items.all())
+        total = Decimal('0.00')
+        for item in self:
+            total += Decimal(str(item['price'])) * item['quantity']
+        return total
 
     def clear(self):
         self.cart.items.all().delete()

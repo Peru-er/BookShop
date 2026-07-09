@@ -37,7 +37,7 @@ def get_cart_data(cart):
         try:
             price = float(item['price'])
         except Exception:
-            price = float(product.price)
+            price = float(product.current_price)
 
         try:
             total_price = float(item['total_price'])
@@ -69,7 +69,11 @@ def get_cart_data(cart):
 @require_POST
 def cart_add(request, product_id):
     cart = get_cart(request)
-    product = get_object_or_404(Product, id=product_id)
+
+    product = get_object_or_404(
+        Product.objects.prefetch_related('discounts', 'category__discounts'),
+        id=product_id
+    )
     quantity = int(request.POST.get('quantity', 1))
 
     cart.add(product=product, quantity=quantity)
@@ -88,8 +92,7 @@ def cart_remove(request, product_id):
 
     cart.remove(product)
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get(
-            'Accept') == 'application/json':
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get('Accept') == 'application/json':
         return JsonResponse(get_cart_data(cart))
 
     messages.success(request, f'Item "{product.name}" removed from cart')
@@ -117,8 +120,7 @@ def cart_update(request, product_id):
         if request.headers.get('x-requested-with') != 'XMLHttpRequest':
             messages.success(request, 'Item removed from cart')
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get(
-            'Accept') == 'application/json':
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get('Accept') == 'application/json':
         return JsonResponse(get_cart_data(cart))
 
     next_url = request.POST.get('next')

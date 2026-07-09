@@ -47,8 +47,15 @@
                         {{ item.product.author }}
                     </p>
                     <p class="cart-price">
-                        £{{ item.price }}
+                        {% if item.product.has_discount %}
+                            <span class="old-book-price" style="font-size: 0.85rem;">£{{ item.product.price }}</span>
+                            <span class="new-book-price" style="font-size: 1rem;">£{{ item.price }}</span>
+                        {% else %}
+                            £{{ item.price }}
+                        {% endif %}
                     </p>
+
+                    <span class="fs-5 fw-bold text-white">£{{ item.total_price }}</span>
                 </div>
 
             </div>

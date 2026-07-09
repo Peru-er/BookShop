@@ -254,7 +254,15 @@
                                     <h5 class="book-title">{{ product.name }}</h5>
                                     <p class="book-author">{{ product.author }}</p>
                                     <p class="book-description">{{ product.description|truncatewords:14 }}</p>
-                                    <h5 class="book-price">£{{ product.price }}</h5>
+                                    <h5 class="book-price">
+                                        {% if product.has_discount %}
+                                            <span class="old-book-price">£{{ product.price }}</span>
+                                            <span class="new-book-price">£{{ product.current_price }}</span>
+                                            <span class="discount-badge-tag">-{{ product.get_active_discount.discount_percent }}%</span>
+                                        {% else %}
+                                            <span>£{{ product.price }}</span>
+                                        {% endif %}
+                                    </h5>
                                 </div>
 
                             </a>
