@@ -189,7 +189,16 @@
                                     <div class="card-body">
                                         <h5 class="book-title">{{ item.product.name }}</h5>
                                         <p class="book-author">{{ item.product.author }}</p>
-                                        <h5 class="book-price">£{{ item.product.price }}</h5>
+
+                                        <h5 class="book-price">
+                                            {% if item.product.has_discount %}
+                                                <span class="old-book-price">£{{ item.product.price }}</span>
+                                                <span class="new-book-price">£{{ item.product.current_price }}</span>
+                                                <span class="discount-badge-tag">-{{ item.product.get_active_discount.discount_percent }}%</span>
+                                            {% else %}
+                                                <span>£{{ item.product.price }}</span>
+                                            {% endif %}
+                                        </h5>
                                     </div>
                                 </a>
 
@@ -235,7 +244,16 @@
                                     <div class="card-body">
                                         <h5 class="book-title">{{ book.name }}</h5>
                                         <p class="book-author">{{ book.author }}</p>
-                                        <h5 class="book-price">£{{ book.price }}</h5>
+
+                                        <h5 class="book-price">
+                                            {% if book.has_discount %}
+                                                <span class="old-book-price">£{{ book.price }}</span>
+                                                <span class="new-book-price">£{{ book.current_price }}</span>
+                                                <span class="discount-badge-tag">-{{ book.get_active_discount.discount_percent }}%</span>
+                                            {% else %}
+                                                <span>£{{ book.price }}</span>
+                                            {% endif %}
+                                        </h5>
                                     </div>
                                 </a>
                                 <div class="book-footer">
@@ -256,7 +274,7 @@
             {% else %}
                 <div class="empty-orders">
                     <h4>No recently viewed books</h4>
-                    <p>Books you look at will appear here so you don't lose them.</p>
+                    <p>Books you look at will appear here, so you don't lose them.</p>
                     <a href="{% url 'shop:catalog' %}" class="btn btn-custom">Explore Catalogue</a>
                 </div>
             {% endif %}

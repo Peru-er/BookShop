@@ -256,3 +256,22 @@ class Discount(models.Model):
     def is_currently_active(self):
         now = timezone.now()
         return self.is_active and self.start_date <= now <= self.end_date
+
+
+class Review(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    text = models.TextField(verbose_name="Review text")
+    rating = models.PositiveIntegerField(
+        default=5,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        verbose_name="Rating"
+    )
+    is_verified_purchase = models.BooleanField(default=False, verbose_name="Verified Purchase")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Review by {self.user.username} for {self.product.name}"

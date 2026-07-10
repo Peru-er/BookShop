@@ -1,5 +1,6 @@
 
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ product.name }}{% endblock %}
 
@@ -198,5 +199,83 @@
     </div>
 
 </div>
+
+<div class="product-card mt-4">
+
+    <h3 class="section-title mb-4">Customer Reviews</h3>
+
+    <div class="review-list mb-4">
+        {% for review in reviews %}
+            <div class="custom-review-card">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <div>
+                        <div class="review-user-name mb-1">{{ review.user.username }}</div>
+                        <div class="review-date">{{ review.created_at|date:"d M Y" }}</div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="review-stars-static">
+                            {% if review.rating == 5 %}★★★★★{% elif review.rating == 4 %}★★★★{% elif review.rating == 3 %}★★★{% elif review.rating == 2 %}★★{% else %}★{% endif %}
+                        </span>
+
+                        {% if review.is_verified_purchase %}
+                            <span class="verified-purchase-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-patch-check-fill me-1" viewBox="0 0 16 16">
+                                    <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.622-.622-.622a2.89 2.89 0 0 0-4.134 0l.622.622-.622.622a2.89 2.89 0 0 0 0 4.134l.622.622-.622.622a2.89 2.89 0 0 0 4.134 0l.622-.622.622.622a2.89 2.89 0 0 0 4.134 0l-.622-.622.622-.622a2.89 2.89 0 0 0 0-4.134l-.622-.622.622-.622z"/>
+                                </svg>
+                                Verified Purchase
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <p class="review-comment-text mb-0" style="white-space: pre-line;">{{ review.text }}</p>
+            </div>
+        {% empty %}
+            <p class="text-muted py-2 mb-0">No reviews yet. Be the first to review this book.</p>
+        {% endfor %}
+    </div>
+
+    <div class="review-form-container mt-4 pt-3 border-top">
+        <h4 class="text-white mb-3">Leave a Review</h4>
+
+        {% if request.user.is_authenticated %}
+            {% if can_review %}
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label text-muted">Your Rating</label>
+                            <div class="d-none">{{ form.rating }}</div>
+                            <div class="interactive-stars-rating" id="interactive-stars">
+                                <span class="star-btn" data-value="1">★</span>
+                                <span class="star-btn" data-value="2">★</span>
+                                <span class="star-btn" data-value="3">★</span>
+                                <span class="star-btn" data-value="4">★</span>
+                                <span class="star-btn" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Your Review</label>
+                        {{ form.text }}
+                    </div>
+                    <button type="submit" class="btn btn-custom px-4">Submit Review</button>
+                </form>
+            {% elif already_reviewed %}
+                <div class="alert alert-info" style="background: #1c2d23; border-color: #2b4737; color: #a3cfb6;">
+                    You have already reviewed this product. Thank you for your feedback!
+                </div>
+            {% else %}
+                <div class="alert alert-warning" style="background: #33271c; border-color: #4f3d2b; color: #eec59e;">
+                    Only customers who have purchased this book can leave a review.
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-muted">Please <a href="{% url 'users:login' %}" class="text-custom-link" style="color: #8ecf99;">log in</a> to leave a review.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script src="{% static 'js/rating.js' %}"></script>
 
 {% endblock %}

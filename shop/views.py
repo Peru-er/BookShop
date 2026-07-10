@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.shortcuts import redirect
 
+from .forms import ReviewForm
 from users.models import Wishlist
 from .models import (
     Product,
@@ -12,7 +13,8 @@ from .models import (
     Author,
     Series,
     Waitlist,
-    CarouselBanner
+    CarouselBanner,
+    Review
 )
 
 
@@ -198,16 +200,45 @@ def product_detail(request, pk):
         Product.objects.select_related('author', 'series').prefetch_related('genres'),
         pk=pk
     )
+    reviews = product.reviews.all()
+
+    can_review = False
+    has_bought = False
+    already_reviewed = False
+
+    if request.user.is_authenticated:
+        user_orders_with_product = request.user.order_set.filter(
+            items__product=product,
+            status__in=['shipped', 'delivered']
+        )
+
+        if user_orders_with_product.exists():
+            has_bought = True
+
+        already_reviewed = Review.objects.filter(product=product, user=request.user).exists()
+
+        if has_bought and not already_reviewed:
+            can_review = True
+
+    if request.method == 'POST' and can_review:
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.is_verified_purchase = True
+            review.save()
+
+            messages.success(request, "Your review has been successfully submitted.")
+            return redirect('shop:product_detail', pk=product.id)
+    else:
+        form = ReviewForm()
 
     recently_viewed = request.session.get('recently_viewed', [])
-
     if product.id in recently_viewed:
         recently_viewed.remove(product.id)
-
     recently_viewed.insert(0, product.id)
-
     request.session['recently_viewed'] = recently_viewed[:10]
-
     request.session.modified = True
 
     is_wished = False
@@ -216,8 +247,14 @@ def product_detail(request, pk):
 
     context = {
         'product': product,
+        'reviews': reviews,
+        'form': form,
+        'can_review': can_review,
+        'has_bought': has_bought,
+        'already_reviewed': already_reviewed,
         'is_wished': is_wished,
     }
+
     return render(request, 'shop/product_detail.html', context)
 
 

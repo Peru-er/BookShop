@@ -8,7 +8,8 @@ from .models import (
     Series,
     Genre,
     CarouselBanner,
-    Discount
+    Discount,
+    Review
 )
 
 
@@ -122,3 +123,10 @@ class ProductAdmin(admin.ModelAdmin):
     ]
 
     inlines = [ProductImageInline]
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'rating', 'is_verified_purchase', 'created_at')
+    list_filter = ('rating', 'is_verified_purchase', 'created_at')
+    search_fields = ('user__username', 'product__name', 'text')
