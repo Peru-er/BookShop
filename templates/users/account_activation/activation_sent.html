@@ -1,0 +1,28 @@
+
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Account Activation</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container text-center">
+        <h2 class="form-title" style="color: #79c77b;">Registration Successful</h2>
+        <p class="form-subtitle" style="margin-bottom: 25px;">
+            Please confirm your email address to complete the registration.
+        </p>
+        <p style="color: #b8c4b7; font-size: 0.95rem; line-height: 1.6;">
+            We have sent an activation link to your email. If you do not receive it within a few minutes, please check your spam folder.
+        </p>
+        <div class="form-footer" style="margin-top: 40px;">
+            <a href="{% url 'users:login' %}" class="btn btn-custom px-4">Go to Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

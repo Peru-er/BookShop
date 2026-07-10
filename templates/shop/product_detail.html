@@ -1,0 +1,305 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'shop:catalog' %}">Catalogue</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="product-page">
+
+    <div class="row g-5">
+
+        <div class="col-lg-4">
+            <div class="product-image-card">
+                {% if product.images.first %}
+                    <img
+                        src="{{ product.images.first.image.url }}"
+                        class="product-image"
+                        alt="{{ product.name }}"
+                    >
+                {% else %}
+                    <div class="no-image">
+                        No image available
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="product-card position-relative">
+
+                {% if request.user.is_authenticated %}
+                    <a href="#"
+                       class="position-absolute end-0 top-0 m-4 p-0 text-decoration-none wishlist-toggle"
+                       data-product-id="{{ product.id }}"
+                       style="background: none; border: none; z-index: 10;">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="26"
+                             height="26"
+                             fill="{% if is_wished %}#6d3232{% else %}#6c757d{% endif %}"
+                             class="bi bi-heart-fill wishlist-icon"
+                             viewBox="0 0 16 16"
+                             style="transition: transform 0.2s ease, fill 0.2s ease;">
+                            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                        </svg>
+                    </a>
+                {% endif %}
+
+                <h1 class="product-title pe-5">
+                    {{ product.name }}
+                </h1>
+
+                <p class="product-author">
+                    <a href="{% url 'shop:author_detail' product.author.id %}?from_product={{ product.id }}" class="text-decoration-none text-custom-link">
+                        {{ product.author.name }}
+                    </a>
+                </p>
+
+                {% if product.publisher %}
+                    <p class="product-publisher">
+                        Publisher:
+                        <a href="{% url 'shop:catalog' %}?publisher={{ product.publisher }}" class="text-custom-link">
+                            {{ product.publisher }}
+                        </a>
+                    </p>
+                {% endif %}
+
+                <hr>
+
+                <p class="product-description">
+                    {{ product.description }}
+                </p>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <span class="product-price">
+                        {% if product.has_discount %}
+                            <span class="old-book-price" style="font-size: 1.4rem; margin-right: 12px; text-decoration: line-through; color: #6c757d;">£{{ product.price }}</span>
+                            <span class="new-book-price" style="color: #8fd0a5; font-weight: bold;">£{{ product.current_price }}</span>
+                            <span class="discount-badge-tag" style="font-size: 0.85rem; background-color: #6d3232; color: #ffffff; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: 'Inter', sans-serif;">-{{ product.get_active_discount.discount_percent }}%</span>
+                        {% else %}
+                            <span>£{{ product.price }}</span>
+                        {% endif %}
+                    </span>
+
+                    {% if product.stock > 0 %}
+                        <span class="status-badge in-stock">
+                            In stock
+                        </span>
+                    {% else %}
+                        <span class="status-badge out-stock">
+                            Out of stock
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if product.stock > 0 %}
+                    <form
+                        method="post"
+                        action="{% url 'cart:cart_add' product.id %}"
+                        class="mt-4"
+                    >
+                        {% csrf_token %}
+                        <input
+                            type="hidden"
+                            name="quantity"
+                            value="1"
+                        >
+                        <button
+                            class="btn btn-custom w-100"
+                            type="submit"
+                        >
+                            Add to cart
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="mt-4">
+                        <div class="product-card" style="background: #203127; border: 1px dashed #4d7358;">
+                            <h5 class="text-white mb-2" style="font-size: 1rem;">Notify me when available</h5>
+
+                            <form method="post" action="{% url 'shop:subscribe_to_stock' product.id %}">
+                                {% csrf_token %}
+
+                                {% if not request.user.is_authenticated %}
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        class="form-control mb-2"
+                                        placeholder="Enter your email"
+                                        required
+                                    >
+                                {% endif %}
+
+                                <button class="btn btn-custom w-100" type="submit">
+                                    Keep me updated
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="product-card mt-4">
+                <div class="d-flex justify-content-between align-items-center"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#collapseDetails"
+                     aria-expanded="false"
+                     aria-controls="collapseDetails"
+                     style="cursor: pointer; user-select: none;">
+
+                    <h3 class="section-title mb-0">Details</h3>
+
+                    <span class="details-arrow" style="transition: transform 0.2s ease-in-out; color: #6c757d; font-size: 1.2rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </span>
+                </div>
+
+                <div class="collapse mt-4 border-top pt-3" id="collapseDetails">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Category</strong><br>{{ product.category }}</p>
+                            {% if product.series %}
+                                <p>
+                                    <strong>Series</strong><br>
+                                    <a href="{% url 'shop:catalog' %}?series={{ product.series.id }}" class="text-decoration-none text-custom-link">
+                                        {{ product.series.name }}
+                                    </a>
+                                </p>
+                            {% endif %}
+                            <p><strong>Language</strong><br>{{ product.language }}</p>
+                            <p><strong>Format</strong><br>{{ product.format }}</p>
+
+                            {% if product.height and product.width %}
+                                <p>
+                                    <strong>Dimensions</strong><br>
+                                    {{ product.height }} x {{ product.width }}{% if product.thickness %} x {{ product.thickness }}{% endif %} mm
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {% if product.pages %}
+                                <p><strong>Pages</strong><br>{{ product.pages }}</p>
+                            {% endif %}
+                            {% if product.publication_year %}
+                                <p><strong>Year</strong><br>{{ product.publication_year }}</p>
+                            {% endif %}
+                            {% if product.isbn %}
+                                <p><strong>ISBN</strong><br>{{ product.isbn }}</p>
+                            {% endif %}
+                            {% if product.age_rating %}
+                                <p><strong>Age</strong><br>{{ product.age_rating }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if product.genres.all %}
+            <div class="product-card mt-4">
+                <h3 class="section-title">Genres</h3>
+                <p class="product-genres-list">
+                    {% for genre in product.genres.all %}
+                        <a href="{% url 'shop:catalog' %}?genre={{ genre.id }}" class="genre-link">{{ genre.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="product-card mt-4">
+
+    <h3 class="section-title mb-4">Customer Reviews</h3>
+
+    <div class="review-list mb-4">
+        {% for review in reviews %}
+            <div class="custom-review-card">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <div>
+                        <div class="review-user-name mb-1">{{ review.user.username }}</div>
+                        <div class="review-date">{{ review.created_at|date:"d M Y" }}</div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="review-stars-static">
+                            {% if review.rating == 5 %}★★★★★{% elif review.rating == 4 %}★★★★{% elif review.rating == 3 %}★★★{% elif review.rating == 2 %}★★{% else %}★{% endif %}
+                        </span>
+
+                        {% if review.is_verified_purchase %}
+                            <span class="verified-purchase-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-patch-check-fill me-1" viewBox="0 0 16 16">
+                                    <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.622-.622-.622a2.89 2.89 0 0 0-4.134 0l.622.622-.622.622a2.89 2.89 0 0 0 0 4.134l.622.622-.622.622a2.89 2.89 0 0 0 4.134 0l.622-.622.622.622a2.89 2.89 0 0 0 4.134 0l-.622-.622.622-.622a2.89 2.89 0 0 0 0-4.134l-.622-.622.622-.622z"/>
+                                </svg>
+                                Verified Purchase
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <p class="review-comment-text mb-0" style="white-space: pre-line;">{{ review.text }}</p>
+            </div>
+        {% empty %}
+            <p class="text-muted py-2 mb-0">No reviews yet. Be the first to review this book.</p>
+        {% endfor %}
+    </div>
+
+    <div class="review-form-container mt-4 pt-3 border-top">
+        <h4 class="text-white mb-3">Leave a Review</h4>
+
+        {% if request.user.is_authenticated %}
+            {% if can_review %}
+                <form method="post" action="" id="review-form">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label text-muted">Your Rating</label>
+                            <div class="d-none">{{ form.rating }}</div>
+                            <div class="interactive-stars-rating" id="interactive-stars">
+                                <span class="star-btn" data-value="1">★</span>
+                                <span class="star-btn" data-value="2">★</span>
+                                <span class="star-btn" data-value="3">★</span>
+                                <span class="star-btn" data-value="4">★</span>
+                                <span class="star-btn" data-value="5">★</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Your Review</label>
+                        {{ form.text }}
+                    </div>
+                    <button type="submit" class="btn btn-custom px-4">Submit Review</button>
+                </form>
+            {% elif already_reviewed %}
+                <div class="alert alert-info" style="background: #1c2d23; border-color: #2b4737; color: #a3cfb6;">
+                    You have already reviewed this product. Thank you for your feedback.
+                </div>
+            {% else %}
+                <div class="alert alert-warning" style="background: #33271c; border-color: #4f3d2b; color: #eec59e;">
+                    Only customers who have purchased this book can leave a review.
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="text-muted">Please <a href="{% url 'users:login' %}" class="text-custom-link" style="color: #8ecf99;">log in</a> to leave a review.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script src="{% static 'js/rating.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,240 @@
+
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'cart:cart_detail' %}">Cart</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+
+    <!-- LEFT -->
+
+    <div class="col-lg-8">
+
+        <div class="product-card mb-4">
+
+            <h2 class="section-title mb-4">
+                Shipping address
+            </h2>
+
+            {% if addresses %}
+
+                <h5 class="mb-3">
+                    Choose a saved address
+                </h5>
+
+                <form
+                    method="post"
+                    action="{% url 'orders:checkout' %}"
+                >
+
+                    {% csrf_token %}
+
+                    <div class="row g-3 mb-4">
+
+                        {% for address in addresses %}
+
+                        <div class="col-md-6">
+
+                            <label class="address-card">
+
+                                <input
+                                    type="radio"
+                                    name="address_id"
+                                    value="{{ address.id }}"
+                                    required
+                                >
+
+                                <div class="address-content">
+
+                                    <h5>
+
+                                        {{ address.full_name }}
+
+                                    </h5>
+
+                                    <p>
+
+                                        {{ address.address_line1 }}
+
+                                    </p>
+
+                                    <p>
+
+                                        {{ address.city }}, {{ address.postal_code }}
+
+                                    </p>
+
+                                    <p>
+
+                                        {{ address.phone }}
+
+                                    </p>
+
+                                </div>
+
+                            </label>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        name="select_address"
+                        class="btn btn-custom"
+                    >
+
+                        Continue
+
+                    </button>
+
+                </form>
+
+                <hr class="my-5">
+
+            {% endif %}
+
+            <h4 class="mb-4">
+
+                {% if addresses %}
+                    Add a new address
+                {% else %}
+                    Shipping address
+                {% endif %}
+
+            </h4>
+
+            <form
+                method="post"
+                action="{% url 'orders:checkout' %}"
+            >
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    {% for field in form %}
+
+                    <div class="col-md-6 mb-4">
+
+                        <label
+                            class="form-label"
+                            for="{{ field.id_for_label }}"
+                        >
+
+                            {{ field.label }}
+
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+
+                            <div class="form-error">
+
+                                {{ field.errors }}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <button
+                    class="btn btn-custom"
+                    type="submit"
+                    name="add_new_address"
+                >
+
+                    Save and continue
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+
+    <div class="col-lg-4">
+
+        <div class="product-card sticky-top" style="top:20px;">
+
+            <h3 class="section-title">
+
+                Order Summary
+
+            </h3>
+
+            {% for item in cart %}
+
+            <div class="order-item">
+
+                <div>
+
+                    <strong>
+
+                        {{ item.product.name }}
+
+                    </strong>
+
+                    <br>
+
+                    <small>
+
+                        ×{{ item.quantity }}
+
+                    </small>
+
+                </div>
+
+                <div>
+
+                    £{{ item.total_price }}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+            <hr>
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <strong>Total</strong>
+
+                <span class="price">
+
+                    £{{ cart.get_total_price }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

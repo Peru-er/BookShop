@@ -1,0 +1,43 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - BubuKappa{% endblock %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">About Us</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <section class="p-4 p-md-5 rounded shadow" style="background: #203127; border: 1px solid #4d7358;">
+            <div class="row align-items-center g-4">
+                <div class="col-md-9">
+                    <h2 style="font-family: 'Cormorant Garamond', serif; color: #8fd0a5; font-size: 2.5rem;" class="mb-4">About BubuKappa</h2>
+
+                    <p class="text-white-50" style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 1rem;">
+                        Welcome to BubuKappa, a cozy online sanctuary for readers, specializing in manga, light novels, and classic literature. This platform is a fully featured personal graduation project designed to demonstrate clean web architecture, robust database relations, and dynamic user interfaces.
+                    </p>
+
+                    <p class="text-white-50" style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 1rem;">
+                        Under the conceptual guidance of our mascot, the capybara, this bookstore features complex database querying, deep catalog filtering, asynchronous shopping cart updates, and personalized user session tracking. Every single system has been constructed from scratch using Python, Django, and modern JavaScript.
+                    </p>
+
+                    <p class="text-white-50 m-0" style="font-size: 1.1rem; line-height: 1.7;">
+                        Thank you for taking the time to explore this development showcase. Feel free to interact with all the features.
+                    </p>
+                </div>
+                <div class="col-md-3 text-center">
+                    <img src="{% static 'images/favicon.png' %}" alt="BubuKappa Mascot" class="img-fluid rounded-circle" style="max-width: 140px; border: 2px solid #4d7358; padding: 5px; background: #1c2721;">
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

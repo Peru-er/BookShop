@@ -1,0 +1,63 @@
+
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'users:profile' %}">Profile</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Order History</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block title %}Order History{% endblock %}
+
+{% block content %}
+
+<div class="profile-container">
+
+    <div style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+        <a href="{% url 'users:profile' %}" class="btn btn-outline-custom" style="padding: 8px 14px; border-radius: 10px;">
+            ← Back to Profile
+        </a>
+        <h2 class="section-title" style="margin: 0;">Your Order History</h2>
+    </div>
+
+    {% if archived_orders %}
+        {% for order in archived_orders %}
+            <div class="order-card archived-card">
+                <div class="order-header">
+                    <div>
+                        <h5>
+                            Order #{{ order.order_number }}
+                            <span class="status-badge-inline badge-{{ order.status }}">
+                                {{ order.get_status_display|default:order.status }}
+                            </span>
+                        </h5>
+                        <small>{{ order.created_at|date:"d M Y • H:i" }}</small>
+                    </div>
+                    <div class="price">
+                        £{{ order.total_amount }}
+                    </div>
+                </div>
+
+                <div class="order-items">
+                    {% for item in order.items.all %}
+                        <div class="order-item">
+                            {{ item.product_name }}
+                            <span>× {{ item.quantity }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-orders-mini">
+            <p>Your order history is completely empty.</p>
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
