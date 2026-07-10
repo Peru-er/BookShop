@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status</title>
+</head>
+
+<body style="margin:0; padding:20px 0; background:#171a17; font-family:Arial,sans-serif; color:#f2f2f2;">
+
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center" style="padding: 0 10px;"> <table width="100%" cellpadding="0" cellspacing="0"
+                       style="max-width:620px; background:#24362c; border:1px solid #4d7358; border-radius:18px; overflow:hidden;">
+
+                    <tr>
+                        <td align="center" style="background:#203127; padding:30px;">
+                            <h1 style="margin:0; color:#d8ffd0; font-size:32px;">
+                                BubuKappa
+                            </h1>
+                            <p style="margin:12px 0 0; color:#bfcabf;">
+                                Your order status has been updated.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:35px;">
+                            <h2 style="margin-top:0; color:#7fd58c;">
+                                Hello, {{ order.shipping_full_name }}.
+                            </h2>
+
+                            <p style="color:#d7d7d7; line-height:1.7;">
+                                Your order 
+                                <strong>#{{ order.order_number }}</strong> 
+                                has been updated.
+                            </p>
+
+                            <div style="
+                                margin:25px 0;
+                                padding:20px;
+                                border-radius:12px;
+                                background:#2a3c32;
+                                border:1px solid #4d7358;
+                            ">
+                                <strong>Status:</strong>
+                                <span style="color:#82d489; font-size:18px; display:inline-block; margin-left:5px;">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </div>
+
+                            {% if order.estimated_delivery %}
+                            <p style="color:#d7d7d7; line-height:1.7;">
+                                Estimated delivery: 
+                                <strong>{{ order.estimated_delivery }}</strong>
+                            </p>
+                            {% endif %}
+
+                            {% if order.status == 'cancelled' %}
+                            <p style="color:#ff9f9f; line-height:1.7;">
+                                Your order has been cancelled.
+                            </p>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding:25px; background:#203127; color:#9eb39f; font-size:14px;">
+                            <strong style="color:#d8ffd0;">
+                                The BubuKappa Team
+                            </strong>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

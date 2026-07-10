@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}BubuKappa{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+
+<body>
+
+<header>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand logo" href="{% url 'shop:home' %}">BubuKappa</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar">
+            <div class="navbar-nav me-auto align-items-center">
+                <a class="nav-link catalogue-link" href="{% url 'shop:catalog' %}">Catalogue</a>
+                <a class="nav-link catalogue-link" href="{% url 'shop:about' %}">About Us</a>
+            </div>
+
+            <form class="d-flex me-2 position-relative align-items-center" method="get" action="{% url 'shop:catalog' %}" id="search-form">
+                <input class="form-control search-box pe-5" type="text" name="q" id="search-input" value="{{ query|default:'' }}" placeholder="Search books...">
+
+                <button type="button" id="search-clear-btn" class="btn-clear-search" style="{% if not query %}display: none;{% endif %}" title="Clear search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </button>
+            </form>
+
+            <div class="d-flex align-items-center gap-3 ms-3">
+
+                <button id="open-cart-btn" type="button" class="btn btn-icon position-relative" title="Your Cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="#8fd0a5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="bi bi-custom-bag" viewBox="0 0 24 24">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span class="badge bg-success rounded-pill cart-badge position-absolute top-0 start-100 translate-middle" id="nav-cart-badge" style="font-size: 0.7rem; {% if not cart or cart|length == 0 %}display:none;{% endif %}">
+                        {{ cart|length }}
+                    </span>
+                </button>
+
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-icon dropdown-toggle no-caret" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Account">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#8fd0a5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="bi bi-custom-user" viewBox="0 0 24 24">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end custom-dropdown" aria-labelledby="profileDropdown">
+                            <li class="dropdown-header text-white-50 border-bottom border-secondary pb-2 mb-2">
+                                Signed in as <strong class="text-white d-block">{{ request.user.username }}</strong>
+                            </li>
+                            <li><a class="dropdown-item fw-bold text-success" href="{% url 'users:profile' %}">Profile</a></li>
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li><a class="dropdown-item profile-menu-link" data-target="orders-pane" href="{% url 'users:profile' %}#orders-pane">Active Orders</a></li>
+                            <li><a class="dropdown-item profile-menu-link" data-target="history-pane" href="{% url 'users:profile' %}#history-pane">Order History</a></li>
+                            <li><a class="dropdown-item profile-menu-link" data-target="wishlist-pane" href="{% url 'users:profile' %}#wishlist-pane">Wishlist</a></li>
+                            <li><a class="dropdown-item profile-menu-link" data-target="recently-pane" href="{% url 'users:profile' %}#recently-pane">Recently Viewed</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:settings' %}">Account Settings</a></li>
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li>
+                                <form method="post" action="{% url 'users:logout' %}" class="px-2">
+                                    {% csrf_token %}
+                                    <button class="btn btn-custom-danger w-100 py-1 text-center" type="submit" style="font-size: 0.9rem;">
+                                        Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url 'users:register' %}" class="btn btn-icon" title="Register / Login">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#8fd0a5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="bi bi-custom-user" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </a>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</nav>
+</header>
+
+<main class="container py-4 flex-grow-1">
+    {% block breadcrumbs %}
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Catalogue</li>
+        </ol>
+    </nav>
+    {% endblock %}
+
+    {% if messages %}
+    <div class="flashes">
+        {% for message in messages %}
+            <div class="flash {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer>
+    <div class="container">© 2026 BubuKappa · Created by Peruer</div>
+</footer>
+
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+<div id="side-cart" class="side-cart shadow">
+    <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="m-0 border-0 fs-4" style="font-family: 'Cormorant Garamond', serif;">
+            Your Cart ({% if cart %}{{ cart|length }}{% else %}0{% endif %})
+        </h5>
+        <button type="button" class="btn-close" id="close-cart-btn"></button>
+    </div>
+    <div class="side-cart-items flex-grow-1 p-3 overflow-y-auto" id="side-cart-items"></div>
+    <div class="p-3 border-top bg-light mt-auto">
+        <div class="d-flex justify-content-between mb-3 fs-5 fw-bold">
+            <span>Total:</span>
+            <span id="side-cart-total">£0.00</span>
+        </div>
+        <a href="{% url 'cart:cart_detail' %}" class="btn btn-custom w-100 mb-2">View Full Cart</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/flashes.js' %}"></script>
+<script src="{% static 'js/side_cart.js' %}"></script>
+<script src="{% static 'js/wishlist.js' %}"></script>
+<script src="{% static 'js/global.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+
+    <title>Order Confirmation</title>
+
+</head>
+
+<body style="margin:0; padding:40px 0; background:#171a17; font-family:Arial,sans-serif; color:#f2f2f2;">
+
+    <table width="100%" cellpadding="0" cellspacing="0">
+
+        <tr>
+
+            <td align="center">
+
+                <table width="620" cellpadding="0" cellspacing="0"
+                       style="background:#24362c; border:1px solid #4d7358; border-radius:18px; overflow:hidden;">
+
+                    <!-- HEADER -->
+
+                    <tr>
+
+                        <td
+                            align="center"
+                            style="background:#203127; padding:30px;"
+                        >
+
+                            <h1 style="margin:0; color:#d8ffd0; font-size:32px;">
+
+                                BubuKappa
+
+                            </h1>
+
+                            <p style="margin:12px 0 0; color:#bfcabf;">
+
+                                Thank you for your order.
+
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                    <!-- CONTENT -->
+
+                    <tr>
+
+                        <td style="padding:35px;">
+
+                            <h2 style="margin-top:0; color:#7fd58c;">
+
+                                Hello, {{ order.shipping_full_name }}.
+
+                            </h2>
+
+                            <p style="color:#d7d7d7; line-height:1.7;">
+
+                                Your order
+
+                                <strong>#{{ order.order_number }}</strong>
+
+                                has been successfully placed and is now being processed.
+
+                            </p>
+
+                            <hr style="border:none; border-top:1px solid #45624e; margin:30px 0;">
+
+                            <h3 style="color:#d8ffd0;">
+
+                                Order Summary
+
+                            </h3>
+
+                            <table
+                                width="100%"
+                                cellpadding="10"
+                                cellspacing="0"
+                                style="border-collapse:collapse;"
+                            >
+
+                                <thead>
+
+                                    <tr style="background:#2c4234;">
+
+                                        <th align="left" style="color:white;">
+
+                                            Product
+
+                                        </th>
+
+                                        <th align="center" style="color:white;">
+
+                                            Qty
+
+                                        </th>
+
+                                        <th align="right" style="color:white;">
+
+                                            Total
+
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    {% for item in order.items.all %}
+
+                                    <tr>
+
+                                        <td style="border-bottom:1px solid #3d5545;">
+
+                                            {{ item.product_name }}
+
+                                        </td>
+
+                                        <td
+                                            align="center"
+                                            style="border-bottom:1px solid #3d5545;"
+                                        >
+
+                                            {{ item.quantity }}
+
+                                        </td>
+
+                                        <td
+                                            align="right"
+                                            style="border-bottom:1px solid #3d5545;"
+                                        >
+
+                                            £{{ item.get_total_price }}
+
+                                        </td>
+
+                                    </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                            <table
+                                width="100%"
+                                cellpadding="10"
+                                cellspacing="0"
+                                style="margin-top:15px;"
+                            >
+
+                                <tr>
+
+                                    <td align="right">
+
+                                        <strong>
+
+                                            Total
+
+                                        </strong>
+
+                                    </td>
+
+                                    <td
+                                        align="right"
+                                        width="120"
+                                        style="color:#82d489; font-size:22px; font-weight:bold;"
+                                    >
+
+                                        £{{ order.total_amount }}
+
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+                            <hr style="border:none; border-top:1px solid #45624e; margin:30px 0;">
+
+                            <h3 style="color:#d8ffd0;">
+
+                                Shipping Address
+
+                            </h3>
+
+                            <div
+                                style="background:#2a3c32; border:1px solid #4e6f56; border-radius:12px; padding:18px;"
+                            >
+
+                                {{ order.shipping_full_name }}<br>
+
+                                {{ order.shipping_address_line1 }}
+
+                                {% if order.shipping_address_line2 %}
+
+                                    <br>
+
+                                    {{ order.shipping_address_line2 }}
+
+                                {% endif %}
+
+                                <br>
+
+                                {{ order.shipping_city }},
+
+                                {{ order.shipping_country }}
+
+                                <br>
+
+                                {{ order.shipping_phone }}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <!-- FOOTER -->
+
+                    <tr>
+
+                        <td
+                            align="center"
+                            style="padding:25px; background:#203127; color:#9eb39f; font-size:14px;"
+                        >
+
+                            Happy reading
+
+                            <br><br>
+
+                            <strong style="color:#d8ffd0;">
+
+                                The BubuKappa Team
+
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</body>
+
+</html>
