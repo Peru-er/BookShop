@@ -99,7 +99,10 @@ class ProductAdmin(admin.ModelAdmin):
                 'pages',
                 'language',
                 'age_rating',
-                'format'
+                'format',
+                'height',
+                'width',
+                'thickness',
             )
         }),
         ('Description', {

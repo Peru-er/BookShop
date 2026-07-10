@@ -1,5 +1,6 @@
 from django.db.models import Q, Case, Value, When, IntegerField
 from django.core.cache import cache
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -228,6 +229,19 @@ def product_detail(request, pk):
             review.user = request.user
             review.is_verified_purchase = True
             review.save()
+
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                stars_html = "★" * review.rating
+
+                return JsonResponse({
+                    'status': 'success',
+                    'username': review.user.username,
+                    'date': review.created_at.strftime("%d %b %Y"),
+                    'rating_stars': stars_html,
+                    'text': review.text,
+                    'is_verified': review.is_verified_purchase,
+                    'message': "Your review has been successfully submitted."
+                })
 
             messages.success(request, "Your review has been successfully submitted.")
             return redirect('shop:product_detail', pk=product.id)

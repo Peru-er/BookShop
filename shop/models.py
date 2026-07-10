@@ -96,6 +96,9 @@ class Product(models.Model):
     )
     isbn = models.CharField(max_length=20, blank=True)
     pages = models.PositiveIntegerField(null=True, blank=True)
+    height = models.PositiveIntegerField(null=True, blank=True, help_text="Height in mm")
+    width = models.PositiveIntegerField(null=True, blank=True, help_text="Width in mm")
+    thickness = models.PositiveIntegerField(null=True, blank=True, help_text="Thickness (spine) in mm")
     language = models.CharField(max_length=50, default='English')
     age_rating = models.CharField(max_length=10, blank=True)
 

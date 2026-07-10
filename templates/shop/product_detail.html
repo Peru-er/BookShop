@@ -151,34 +151,58 @@
             </div>
 
             <div class="product-card mt-4">
-                <h3 class="section-title">Details</h3>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Category</strong><br>{{ product.category }}</p>
-                        {% if product.series %}
-                            <p>
-                                <strong>Series</strong><br>
-                                <a href="{% url 'shop:catalog' %}?series={{ product.series.id }}" class="text-decoration-none text-custom-link">
-                                    {{ product.series.name }}
-                                </a>
-                            </p>
-                        {% endif %}
-                        <p><strong>Language</strong><br>{{ product.language }}</p>
-                        <p><strong>Format</strong><br>{{ product.format }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        {% if product.pages %}
-                            <p><strong>Pages</strong><br>{{ product.pages }}</p>
-                        {% endif %}
-                        {% if product.publication_year %}
-                            <p><strong>Year</strong><br>{{ product.publication_year }}</p>
-                        {% endif %}
-                        {% if product.isbn %}
-                            <p><strong>ISBN</strong><br>{{ product.isbn }}</p>
-                        {% endif %}
-                        {% if product.age_rating %}
-                            <p><strong>Age</strong><br>{{ product.age_rating }}</p>
-                        {% endif %}
+                <div class="d-flex justify-content-between align-items-center"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#collapseDetails"
+                     aria-expanded="false"
+                     aria-controls="collapseDetails"
+                     style="cursor: pointer; user-select: none;">
+
+                    <h3 class="section-title mb-0">Details</h3>
+
+                    <span class="details-arrow" style="transition: transform 0.2s ease-in-out; color: #6c757d; font-size: 1.2rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.646a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </span>
+                </div>
+
+                <div class="collapse mt-4 border-top pt-3" id="collapseDetails">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Category</strong><br>{{ product.category }}</p>
+                            {% if product.series %}
+                                <p>
+                                    <strong>Series</strong><br>
+                                    <a href="{% url 'shop:catalog' %}?series={{ product.series.id }}" class="text-decoration-none text-custom-link">
+                                        {{ product.series.name }}
+                                    </a>
+                                </p>
+                            {% endif %}
+                            <p><strong>Language</strong><br>{{ product.language }}</p>
+                            <p><strong>Format</strong><br>{{ product.format }}</p>
+
+                            {% if product.height and product.width %}
+                                <p>
+                                    <strong>Dimensions</strong><br>
+                                    {{ product.height }} x {{ product.width }}{% if product.thickness %} x {{ product.thickness }}{% endif %} mm
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {% if product.pages %}
+                                <p><strong>Pages</strong><br>{{ product.pages }}</p>
+                            {% endif %}
+                            {% if product.publication_year %}
+                                <p><strong>Year</strong><br>{{ product.publication_year }}</p>
+                            {% endif %}
+                            {% if product.isbn %}
+                                <p><strong>ISBN</strong><br>{{ product.isbn }}</p>
+                            {% endif %}
+                            {% if product.age_rating %}
+                                <p><strong>Age</strong><br>{{ product.age_rating }}</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -240,7 +264,7 @@
 
         {% if request.user.is_authenticated %}
             {% if can_review %}
-                <form method="post" action="">
+                <form method="post" action="" id="review-form">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-4 mb-3">
@@ -263,7 +287,7 @@
                 </form>
             {% elif already_reviewed %}
                 <div class="alert alert-info" style="background: #1c2d23; border-color: #2b4737; color: #a3cfb6;">
-                    You have already reviewed this product. Thank you for your feedback!
+                    You have already reviewed this product. Thank you for your feedback.
                 </div>
             {% else %}
                 <div class="alert alert-warning" style="background: #33271c; border-color: #4f3d2b; color: #eec59e;">
