@@ -37,7 +37,7 @@
             <div class="col-md-3 text-center">
                 {% if author.photo %}
                     <img
-                        src="{{ author.photo.url }}"
+                        src="{% static '' %}{{ author.photo.name|cut:'media/' }}"
                         alt="{{ author.name }}"
                         class="img-fluid rounded-circle"
                         style="width: 180px; height: 180px; object-fit: cover; border: 3px solid #4d7358;"

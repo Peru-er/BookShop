@@ -24,7 +24,7 @@
             <div class="product-image-card">
                 {% if product.images.first %}
                     <img
-                        src="{{ product.images.first.image.url }}"
+                        src="{% static '' %}{{ product.images.first.image.name|cut:'media/' }}"
                         class="product-image"
                         alt="{{ product.name }}"
                     >

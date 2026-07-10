@@ -21,7 +21,7 @@
                 <a href="{{ banner.link }}">
             {% endif %}
 
-            <img src="{{ banner.image.url }}" class="d-block w-100" alt="{{ banner.title }}" style="object-fit: cover; max-height: 400px; min-height: 220px;">
+            <img src="{% static '' %}{{ banner.image.name|cut:'media/' }}" class="d-block w-100" alt="{{ banner.title }}" style="object-fit: cover; max-height: 400px; min-height: 220px;">
 
             {% if banner.link %}
                 </a>
