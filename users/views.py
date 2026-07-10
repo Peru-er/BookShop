@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView  # Добавили PasswordResetView
 from django_ratelimit.decorators import ratelimit
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -21,7 +21,7 @@ from .tokens import account_activation_token
 from users.models import Wishlist
 from cart.cart import merge_carts
 from orders.models import Order
-from .forms import RegisterForm, UserProfileForm
+from .forms import RegisterForm, UserProfileForm, CustomPasswordResetForm  # Добавили нашу форму формы
 from .models import Product
 
 
@@ -64,7 +64,6 @@ def register(request):
         form = RegisterForm(request.POST)
 
         if form.is_valid():
-
             user = form.save(commit=False)
             user.is_active = True
             user.is_email_verified = False
@@ -157,7 +156,6 @@ def profile_settings(request):
                 messages.success(request, 'Your password has been changed successfully.')
                 return redirect('users:settings')
 
-        # Логика удаления аккаунта
         elif 'delete_account' in request.POST:
             password_to_check = request.POST.get('delete_password')
 
@@ -217,9 +215,7 @@ def clear_wishlist(request):
 
 def activate(request, uidb64, token):
     try:
-
         uid = force_str(urlsafe_base64_decode(uidb64))
-
         from django.contrib.auth import get_user_model
         User = get_user_model()
         user = User.objects.get(pk=uid)
@@ -236,3 +232,21 @@ def activate(request, uidb64, token):
         return redirect('shop:catalog')
     else:
         return render(request, 'users/activation_invalid.html')
+
+
+class SuccessMessagePasswordResetView(PasswordResetView):
+    form_class = CustomPasswordResetForm
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "An email with password reset instructions has been sent to your inbox."
+        )
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "Password reset failed. Please check the errors below."
+        )
+        return super().form_invalid(form)

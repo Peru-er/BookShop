@@ -1,5 +1,5 @@
 
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -38,4 +38,12 @@ class UserProfileForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError('This email is already taken.')
+        return email
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not User.objects.filter(email=email, is_active=True).exists():
+            raise forms.ValidationError("A user with this email address was not found.")
         return email
