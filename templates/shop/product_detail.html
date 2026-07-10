@@ -23,15 +23,21 @@
         <div class="col-lg-4">
             <div class="product-image-card">
                 {% if product.images.first %}
+
                     <img
-                        src="{% static '' %}{{ product.images.first.image.name|cut:'media/' }}"
+                        src="{{ product.images.first.image.url }}"
                         class="product-image"
                         alt="{{ product.name }}"
                     >
+
                 {% else %}
+
                     <div class="no-image">
+
                         No image available
+
                     </div>
+
                 {% endif %}
             </div>
         </div>

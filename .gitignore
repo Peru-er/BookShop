@@ -1,13 +1,10 @@
 
 .env
 
-<<<<<<< HEAD
-# db.sqlite3
+db.sqlite3
 
-# staticfiles/
+staticfiles/
 
-=======
->>>>>>> production
 .venv/
 venv/
 env/
@@ -17,11 +14,7 @@ __pycache__/
 *$py.class
 *.pyc
 
-<<<<<<< HEAD
-# media/
-
-=======
->>>>>>> production
+media/
 .idea/
 
 .docker/

@@ -36,17 +36,21 @@
 
             <div class="col-md-3 text-center">
                 {% if author.photo %}
+
                     <img
-                        src="{% static '' %}{{ author.photo.name|cut:'media/' }}"
+                        src="{{ author.photo.url }}"
                         alt="{{ author.name }}"
                         class="img-fluid rounded-circle"
                         style="width: 180px; height: 180px; object-fit: cover; border: 3px solid #4d7358;"
                     >
+
                 {% else %}
+
                     <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto"
-                         style="width: 180px; height: 180px; background: #203127; border: 3px dashed #4d7358; color: #78d35f;">
+                        style="width: 180px; height: 180px; background: #203127; border: 3px dashed #4d7358; color: #78d35f;">
                         <span>No Photo</span>
                     </div>
+
                 {% endif %}
             </div>
 
