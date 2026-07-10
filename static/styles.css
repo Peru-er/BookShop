@@ -2316,20 +2316,20 @@ textarea.form-control{
 }
 
 [data-bs-toggle="collapse"][aria-expanded="false"] .details-arrow {
-        transform: rotate(0deg) !important;
-        color: #6c757d !important;
-    }
+    transform: rotate(0deg) !important;
+    color: #6c757d !important;
+}
 
-    [data-bs-toggle="collapse"][aria-expanded="true"] .details-arrow {
-        transform: rotate(180deg) !important;
-        color: #8ecf99 !important;
-    }
+[data-bs-toggle="collapse"][aria-expanded="true"] .details-arrow {
+    transform: rotate(180deg) !important;
+    color: #8ecf99 !important;
+}
 
-    .details-arrow {
-        display: inline-block;
-        transition: transform 0.3s ease-in-out !important;
-    }
+.details-arrow {
+    display: inline-block;
+    transition: transform 0.3s ease-in-out !important;
+}
 
-    .collapse, .collapsing {
-        transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
+.collapse, .collapsing {
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
