@@ -35,6 +35,10 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', '.railway.app'])
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://bookshop-production-5eb4.up.railway.app',
+]
+
 
 # Application definition
 
