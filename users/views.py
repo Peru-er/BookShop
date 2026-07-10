@@ -72,7 +72,7 @@ def register(request):
             current_site = get_current_site(request)
             subject = 'Activate your BubuKappa Account'
 
-            message = render_to_string('users/account_activation_email.html', {
+            message = render_to_string('users/account_activation/account_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -88,7 +88,12 @@ def register(request):
                 html_message=message
             )
 
-            return render(request, 'users/activation_sent.html')
+            messages.success(
+                request,
+                "An activation link has been sent to your email address. Please check your inbox to verify your account."
+            )
+
+            return render(request, 'users/account_activation/activation_sent.html')
 
     else:
         form = RegisterForm()
@@ -231,7 +236,11 @@ def activate(request, uidb64, token):
         messages.success(request, 'Your email has been verified and your account is now active.')
         return redirect('shop:catalog')
     else:
-        return render(request, 'users/activation_invalid.html')
+        messages.error(
+            request,
+            'The activation link is invalid or has expired. Please try registering again.'
+        )
+        return render(request, 'users/account_activation/activation_invalid.html')
 
 
 class SuccessMessagePasswordResetView(PasswordResetView):

@@ -62,9 +62,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 input.style.borderColor = "#ff8b8b";
             }
 
-            if (input.value.length > 0) {
-                input.dispatchEvent(new Event('input'));
-            }
         });
     });
 

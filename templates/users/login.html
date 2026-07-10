@@ -3,6 +3,15 @@
 
 {% block title %}Login{% endblock %}
 
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Login</li>
+    </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
 
 <div class="form-container">
