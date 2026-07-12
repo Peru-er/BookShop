@@ -48,6 +48,15 @@ The following features have been successfully implemented in the project:
 * Containerized environment setup utilizing a Dockerfile and docker-compose.yml configuration.
 * Production-ready static file handling using Gunicorn and WhiteNoise.
 
+### 8. Marketing & Pricing Mechanics
+* Dynamic discount system allowing percentage-based or absolute price reductions on products.
+* Visual strike-through pricing in templates for discounted items.
+
+### 9. Interactive Reviews & Ratings System
+* Full-featured product review platform allowing verified users to leave ratings and feedback.
+* Frontend validation for review forms featuring an interactive, secure password requirements validator for account actions within reviews.
+* Context-aware visual indicators for password strength and security constraints.
+
 ---
 
 ## Tech Stack
@@ -105,6 +114,21 @@ Follow these steps to set up and run the project locally.
    python manage.py runserver
    ```
    Access the local application at `http://127.0.0.1:8000/`.
+
+### Running with Gunicorn (Production Server)
+
+If you want to test the application using a production-ready WSGI HTTP server locally (which utilizes WhiteNoise for optimized static file serving):
+
+1. Ensure you have collected all static files:
+   ```bash
+   python manage.py collectstatic --noinput
+   ```
+
+2. Start the application using Gunicorn:
+   ```bash
+   gunicorn ecommerce_project.wsgi:application --bind 0.0.0.0:8000
+   ```
+   The application will be accessible at http://127.0.0.1:8000/.
 
 ### Running with Docker
 
