@@ -113,7 +113,7 @@ Follow these steps to set up and run the project locally.
    ```bash
    python manage.py runserver
    ```
-   Access the local application at `http://127.0.0.1:8000/`.
+   The application will be accessible at `http://127.0.0.1:8000/`.
 
 ### Running with Gunicorn (Production Server)
 
@@ -128,7 +128,7 @@ If you want to test the application using a production-ready WSGI HTTP server lo
    ```bash
    gunicorn ecommerce_project.wsgi:application --bind 0.0.0.0:8000
    ```
-   The application will be accessible at http://127.0.0.1:8000/.
+   The application will be accessible at `http://127.0.0.1:8000/`.
 
 ### Running with Docker
 
