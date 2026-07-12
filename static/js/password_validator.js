@@ -1,14 +1,13 @@
 
 document.addEventListener("DOMContentLoaded", function() {
-
     const usernameInput = document.querySelector('input[name="username"]');
     const emailInput = document.querySelector('input[name="email"]');
-
-    const passwordInputs = document.querySelectorAll('input[name="password1"], input[name="new_password1"]');
+    const passwordInputs = document.querySelectorAll('input[name="password1"], input[name="new_password1"], input[name="password"]');
 
     passwordInputs.forEach(input => {
+        // Ищем блок требований сначала внутри родителя, а если нет — по ID на всей странице
         const formGroup = input.closest('.form-group') || input.closest('.mb-3');
-        const reqBlock = formGroup.querySelector('.password-requirements') || document.getElementById('password-requirements');
+        const reqBlock = formGroup ? (formGroup.querySelector('.password-requirements') || document.getElementById('password-requirements')) : document.getElementById('password-requirements');
 
         if (!reqBlock) return;
 
@@ -19,9 +18,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const reqSimilarity = reqBlock.querySelector('.req-similarity');
 
         input.addEventListener("input", function() {
-            const val = input.value.toLowerCase();
+            const originalVal = input.value;
+            const val = originalVal.toLowerCase();
 
-            if (val.length === 0) {
+            if (originalVal.length === 0) {
                 reqBlock.style.display = "none";
                 input.style.borderColor = "";
                 return;
@@ -29,39 +29,47 @@ document.addEventListener("DOMContentLoaded", function() {
 
             reqBlock.style.display = "block";
 
-            const isLengthValid = val.length >= 8;
+            const isLengthValid = originalVal.length >= 8;
             updateStyle(reqLength, isLengthValid);
 
-            const isNumberValid = /\d/.test(input.value);
+            const isNumberValid = /\d/.test(originalVal);
             updateStyle(reqNumber, isNumberValid);
 
-            const isUppercaseValid = /[A-ZА-Я]/.test(input.value);
+            const isUppercaseValid = /[A-ZА-Я]/.test(originalVal);
             updateStyle(reqUppercase, isUppercaseValid);
 
             const isNotEntirelyNumeric = /\D/.test(val);
             updateStyle(reqNumeric, isNotEntirelyNumeric);
 
+            // Безопасная проверка схожести
             let isNotSimilar = true;
-            const usernameVal = usernameInput ? usernameInput.value.toLowerCase() : "";
-            const emailVal = emailInput ? emailInput.value.toLowerCase() : "";
-
-            if (usernameVal && (val.includes(usernameVal) || usernameVal.includes(val) && val.length > 3)) {
-                isNotSimilar = false;
-            }
-            if (emailVal) {
-                const emailName = emailVal.split('@')[0];
-                if (val.includes(emailName) || emailName.includes(val) && val.length > 3) {
+            if (usernameInput && usernameInput.value) {
+                const usernameVal = usernameInput.value.toLowerCase();
+                if (val.includes(usernameVal) || (usernameVal.includes(val) && val.length > 3)) {
                     isNotSimilar = false;
                 }
             }
-            updateStyle(reqSimilarity, isNotSimilar);
+            if (emailInput && emailInput.value) {
+                const emailVal = emailInput.value.toLowerCase();
+                const emailName = emailVal.split('@')[0];
+                if (val.includes(emailName) || (emailName.includes(val) && val.length > 3)) {
+                    isNotSimilar = false;
+                }
+            }
 
-            if (isLengthValid && isNumberValid && isUppercaseValid && isNotEntirelyNumeric && isNotSimilar) {
+            // Обновляем стиль схожести, только если этот пункт есть в HTML
+            if (reqSimilarity) {
+                updateStyle(reqSimilarity, isNotSimilar);
+            }
+
+            // Проверяем общую валидность (если пункта similarity нет, то его в расчет не берем)
+            const allValid = isLengthValid && isNumberValid && isUppercaseValid && isNotEntirelyNumeric && (!reqSimilarity || isNotSimilar);
+
+            if (allValid) {
                 input.style.borderColor = "#79c77b";
             } else {
                 input.style.borderColor = "#ff8b8b";
             }
-
         });
     });
 

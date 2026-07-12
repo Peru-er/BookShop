@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
-from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView  # Добавили PasswordResetView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView
 from django_ratelimit.decorators import ratelimit
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -21,7 +21,7 @@ from .tokens import account_activation_token
 from users.models import Wishlist
 from cart.cart import merge_carts
 from orders.models import Order
-from .forms import RegisterForm, UserProfileForm, CustomPasswordResetForm  # Добавили нашу форму формы
+from .forms import RegisterForm, UserProfileForm, CustomPasswordResetForm
 from .models import Product
 
 
@@ -90,7 +90,8 @@ def register(request):
 
             messages.success(
                 request,
-                "An activation link has been sent to your email address. Please check your inbox to verify your account."
+                "An activation link has been sent to your email address. "
+                "Please check your inbox to verify your account."
             )
 
             return render(request, 'users/account_activation/activation_sent.html')
@@ -241,6 +242,22 @@ def activate(request, uidb64, token):
             'The activation link is invalid or has expired. Please try registering again.'
         )
         return render(request, 'users/account_activation/activation_invalid.html')
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'users/password_reset/password_reset_confirm.html'
+    success_url = '/users/password-reset-complete/'
+
+    def dispatch(self, *args, **kwargs):
+        self.template_name = 'users/password_reset/password_reset_confirm.html'
+        return super().dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Your password has been changed successfully!"
+        )
+        return super().form_valid(form)
 
 
 class SuccessMessagePasswordResetView(PasswordResetView):
